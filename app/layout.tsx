@@ -1,0 +1,73 @@
+import type { Metadata, Viewport } from "next";
+import { Montserrat, Inter } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
+import { ThemeProvider } from "@/components/theme-provider";
+import { PageTransition } from "@/components/page-transition";
+import "./globals.css";
+
+const montserrat = Montserrat({
+  subsets: ["latin"],
+  variable: "--font-heading",
+  weight: ["400", "700", "900"],
+  display: "swap",
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
+});
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#1c1b19" },
+  ],
+};
+
+export const metadata: Metadata = {
+  title: "LuxeRide - Premium Car Rentals in India",
+  description:
+    "Experience luxury car rentals with premium vehicles across India",
+  generator: "v0.app",
+  icons: {
+    icon: [
+      {
+        url: "/icon-light-32x32.png",
+        media: "(prefers-color-scheme: light)",
+      },
+      {
+        url: "/icon-dark-32x32.png",
+        media: "(prefers-color-scheme: dark)",
+      },
+      {
+        url: "/icon.svg",
+        type: "image/svg+xml",
+      },
+    ],
+    apple: "/apple-icon.png",
+  },
+};
+
+import { AuthProvider } from "@/lib/context/auth-context";
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <body
+        className={`${montserrat.variable} ${inter.variable} font-sans antialiased`}
+      >
+        <AuthProvider>
+          <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+            <PageTransition>{children}</PageTransition>
+          </ThemeProvider>
+        </AuthProvider>
+        <Analytics />
+      </body>
+    </html>
+  );
+}

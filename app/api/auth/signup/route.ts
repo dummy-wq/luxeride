@@ -1,0 +1,78 @@
+import { NextRequest, NextResponse } from "next/server";
+import { UserModel } from "@/lib/db/models/user";
+import jwt from "jsonwebtoken";
+
+import { signupSchema } from "@/lib/schemas/auth";
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    
+    // Schema validation
+    const validation = signupSchema.safeParse(body);
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: validation.error.errors[0].message },
+        { status: 400 },
+      );
+    }
+    
+    const { fullName, email, password } = validation.data;
+
+    // Create user
+    const userId = await UserModel.create({
+      fullName,
+      email,
+      passwordHash: password,
+      isActive: true,
+    });
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { userId: userId.toString(), email },
+      process.env.JWT_SECRET || "your-secret-key",
+      { expiresIn: "7d" },
+    );
+
+    const response = NextResponse.json(
+      {
+        message: "User created successfully",
+        token,
+        userId: userId.toString(),
+        user: {
+          id: userId.toString(),
+          fullName,
+          email,
+          isActive: true
+        }
+      },
+      { status: 201 },
+    );
+
+    // Set secure HTTP-only cookie
+    response.cookies.set({
+      name: "auth_token",
+      value: token,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60, // 7 days
+    });
+
+    return response;
+  } catch (error: any) {
+    console.error("Signup error:", error);
+
+    if (error.message === "User already exists") {
+      return NextResponse.json(
+        { error: "Email already registered" },
+        { status: 409 },
+      );
+    }
+
+    return NextResponse.json(
+      { error: "Failed to create user" },
+      { status: 500 },
+    );
+  }
+}
