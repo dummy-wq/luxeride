@@ -9,6 +9,18 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // Handle synthetic admin user from hardcoded login
+    if (auth.userId === "admin") {
+      return NextResponse.json({
+        user: {
+          id: "admin",
+          fullName: "System Administrator",
+          email: "admin",
+          role: "admin",
+        },
+      });
+    }
+
     const user = await UserModel.findById(auth.userId);
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
@@ -39,6 +51,18 @@ export async function PUT(request: NextRequest) {
     }
 
     const updates = await request.json();
+
+    if (auth.userId === "admin") {
+      return NextResponse.json({
+        message: "Admin profile cannot be updated in this demo",
+        user: {
+          id: "admin",
+          fullName: "System Administrator",
+          email: "admin",
+          role: "admin",
+        },
+      });
+    }
 
     // Prevent updating sensitive fields
     const { _id, createdAt, passwordHash, email, walletBalance, isActive, isBanned, role, ...safeUpdates } = updates;

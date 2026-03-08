@@ -9,6 +9,10 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    if (auth.userId === "admin") {
+      return NextResponse.json({ payments: [] });
+    }
+
     const payments = await PaymentModel.findByUserId(auth.userId);
 
     return NextResponse.json({

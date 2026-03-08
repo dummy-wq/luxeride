@@ -9,6 +9,10 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    if (auth.userId === "admin") {
+      return NextResponse.json({ bookings: [] });
+    }
+
     const bookings = await BookingModel.findByUserId(auth.userId);
 
     return NextResponse.json({
