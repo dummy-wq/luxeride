@@ -33,13 +33,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
-    const initAuth = () => {
+    const initAuth = async () => {
       try {
-        const storedUser = localStorage.getItem("user");
         const token = localStorage.getItem("auth_token");
-        
-        if (storedUser && token) {
-          setUser(JSON.parse(storedUser));
+        if (!token) {
+          setIsLoading(false);
+          return;
+        }
+
+        // Verify token by fetching profile
+        const response = await fetch("/api/users/profile", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setUser(data.user);
+          localStorage.setItem("user", JSON.stringify(data.user));
+        } else {
+          // Token expired or invalid
+          localStorage.removeItem("auth_token");
+          localStorage.removeItem("user");
+          setUser(null);
         }
       } catch (error) {
         console.error("Failed to initialize auth:", error);

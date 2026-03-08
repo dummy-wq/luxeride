@@ -1,6 +1,7 @@
 {
-  "name": "my-project",
+  "name": "luxeride",
   "version": "0.1.0",
+  "description": "LuxeRide - Premium Car Rental Platform",
   "private": true,
   "scripts": {
     "dev": "next dev",
