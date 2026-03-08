@@ -6,9 +6,11 @@ import { Mail, Lock, User, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+import { AuthResponse } from "@/lib/types";
+
 interface AuthFormProps {
   type: "login" | "signup";
-  onSubmit?: (data: any) => void;
+  onSubmit?: (data: AuthResponse) => void;
 }
 
 export function AuthForm({ type, onSubmit }: AuthFormProps) {
@@ -89,8 +91,9 @@ export function AuthForm({ type, onSubmit }: AuthFormProps) {
           router.push(type === "login" ? "/" : "/onboarding");
         }
       }, 1500);
-    } catch (err: any) {
-      setError(err.message || `${type} failed. Please try again.`);
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : `${type} failed. Please try again.`;
+      setError(errorMessage);
       console.error(`${type} error:`, err);
     } finally {
       setIsLoading(false);

@@ -149,13 +149,15 @@ export function Navigation() {
                     <User className="w-5 h-5" />
                   </Button>
                 </Link>
-                <Button
-                  variant="ghost"
-                  onClick={handleLogout}
-                  className="text-foreground"
-                >
-                  Logout
-                </Button>
+                {pathname !== "/profile" && (
+                  <Button
+                    variant="ghost"
+                    onClick={handleLogout}
+                    className="text-foreground"
+                  >
+                    Logout
+                  </Button>
+                )}
               </>
             ) : (
               <>

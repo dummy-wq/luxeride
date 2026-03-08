@@ -9,6 +9,8 @@ export interface UserProfile {
   licenseNumber?: string
   createdAt?: string
   updatedAt?: string
+  walletBalance?: number
+  role?: string
 }
 
 export interface AuthResponse {
@@ -35,6 +37,7 @@ export interface Booking {
   notes?: string
   createdAt?: string
   updatedAt?: string
+  expireAt?: string | Date
 }
 
 // Payment Types
@@ -44,8 +47,9 @@ export interface Payment {
   amount: number
   currency: string
   paymentMethod: 'card' | 'wallet' | 'upi' | 'cash'
-  status: 'pending' | 'completed' | 'failed' | 'refunded'
+  status: 'pending' | 'completed' | 'failed' | 'refunded' | 'refunded_to_wallet'
   transactionId?: string
+  carName?: string
   notes?: string
   createdAt: string | Date
   updatedAt?: string

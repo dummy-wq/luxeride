@@ -9,7 +9,7 @@ export async function PATCH(
 ) {
     try {
         const auth = verifyAuth(request);
-        if (!auth || (auth as any).role !== "admin") {
+        if (!auth || auth.role !== "admin") {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
@@ -40,7 +40,7 @@ export async function DELETE(
 ) {
     try {
         const auth = verifyAuth(request);
-        if (!auth || (auth as any).role !== "admin") {
+        if (!auth || auth.role !== "admin") {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 

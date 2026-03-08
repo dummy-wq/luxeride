@@ -14,8 +14,12 @@ import {
     ArrowLeft,
     XCircle,
 } from "lucide-react";
+import { useAuth } from "@/lib/context/auth-context";
+
+import { Booking } from "@/lib/types";
 
 export default function CancelBookingPage() {
+    const { refreshUser } = useAuth();
     const router = useRouter();
     const params = useParams();
     const bookingId = params.bookingId as string;
@@ -50,7 +54,7 @@ export default function CancelBookingPage() {
 
             const data = await response.json();
             const targetBooking = data.bookings.find(
-                (b: any) => b.id === bookingId || b._id === bookingId
+                (b: Booking & { _id?: string }) => b.id === bookingId || b._id === bookingId
             );
 
             if (!targetBooking) {
@@ -58,8 +62,9 @@ export default function CancelBookingPage() {
             }
 
             setBooking(targetBooking);
-        } catch (err: any) {
-            setError(err.message);
+        } catch (err: unknown) {
+            console.error("Fetch booking error:", err);
+            setError(err instanceof Error ? err.message : "Failed to load booking details");
         } finally {
             setIsLoading(false);
         }
@@ -86,12 +91,13 @@ export default function CancelBookingPage() {
                 throw new Error(errData.error || "Cancellation failed");
             }
 
+            await refreshUser();
             setCancelState("success");
             setTimeout(() => router.push("/profile"), 2500);
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error(err);
             setCancelState("error");
-            setError(err.message);
+            setError(err instanceof Error ? err.message : "An unknown error occurred during cancellation.");
         }
     };
 

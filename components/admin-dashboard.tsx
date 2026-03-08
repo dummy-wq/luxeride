@@ -20,8 +20,10 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
 
 export function AdminDashboard() {
+    const { toast } = useToast();
     const [users, setUsers] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -54,11 +56,10 @@ export function AdminDashboard() {
 
             const data = await response.json();
             setUsers(data.users || []);
-        } catch (err: any) {
-            console.error("Admin fetch error:", err);
-            setError(err.message);
+        } catch (err: unknown) {
+          setError(err instanceof Error ? err.message : "Failed to load admin data");
         } finally {
-            setIsLoading(false);
+          setIsLoading(false);
         }
     };
 
@@ -69,7 +70,8 @@ export function AdminDashboard() {
     const handleAction = async (userId: string, action: string, minutes?: number) => {
         try {
             const token = localStorage.getItem("auth_token");
-            console.log(`Sending ${action} request for user ${userId}`);
+            if (!token) return;
+
             const response = await fetch(`/api/admin/users/${userId}`, {
                 method: action === "delete" ? "DELETE" : "PATCH",
                 headers: {
@@ -79,17 +81,24 @@ export function AdminDashboard() {
                 body: action !== "delete" ? JSON.stringify({ action, minutes }) : undefined,
             });
 
-            console.log(`Action response status: ${response.status}`);
             if (!response.ok) {
                 const errorData = await response.json();
                 console.error("Action failed:", errorData);
-                throw new Error("Action failed");
+                throw new Error(errorData.error || "Action failed");
             }
 
             // Refresh user list
             fetchUsers();
-        } catch (err) {
-            alert("Failed to perform action");
+            toast({
+                title: "Action Successful",
+                description: `Action ${action} has been performed for user.`,
+            });
+        } catch (err: unknown) {
+            toast({
+                title: "Action Failed",
+                description: err instanceof Error ? err.message : "Failed to perform administrative action",
+                variant: "destructive",
+            });
         }
     };
 

@@ -6,11 +6,13 @@ import { AuthForm } from "@/components/auth-form";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
+import { AuthResponse } from "@/lib/types";
+
 export default function LoginPage() {
   const router = useRouter();
   const [error, setError] = useState("");
 
-  const handleSubmit = (data: any) => {
+  const handleSubmit = (data: AuthResponse) => {
     // Correctly extract user from response data
     const user = data.user || data;
     localStorage.setItem("user", JSON.stringify(user));

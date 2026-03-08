@@ -60,10 +60,10 @@ export async function POST(request: NextRequest) {
     });
 
     return response;
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Signup error:", error);
 
-    if (error.message === "User already exists") {
+    if (error instanceof Error && error.message === "User already exists") {
       return NextResponse.json(
         { error: "Email already registered" },
         { status: 409 },
@@ -71,8 +71,8 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { error: "Failed to create user" },
-      { status: 500 },
+      { error: "Failed to create user", details: error instanceof Error ? error.message : "Unknown error" },
+      { status: 500 }
     );
   }
 }

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { Navigation } from "@/components/navigation";
+import { useAuth } from "@/lib/context/auth-context";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,11 +22,13 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { INDIAN_CITIES } from "@/lib/constants";
+import { useToast } from "@/hooks/use-toast";
 
 import { carsDatabase } from "@/lib/data/cars";
 
 export default function CarDetailPage() {
   const router = useRouter();
+  const { toast } = useToast();
   const params = useParams();
   const id = params.id as string;
   const car =
@@ -36,10 +39,14 @@ export default function CarDetailPage() {
   const [hours, setHours] = useState(12);
   const [subscriptionDays, setSubscriptionDays] = useState(7);
   const [isFavorite, setIsFavorite] = useState(false);
-  const [user, setUser] = useState<any>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { user, updateUser } = useAuth();
+  const isAuthenticated = !!user;
   const [selectedCity, setSelectedCity] = useState("Mumbai");
   const [address, setAddress] = useState("");
+  const [phone, setPhone] = useState("");
+  const [licenseNumber, setLicenseNumber] = useState("");
+  const [isProfileUpdating, setIsProfileUpdating] = useState(false);
+  const [profileUpdateError, setProfileUpdateError] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
   const [isBooking, setIsBooking] = useState(false);
   const [bookingStatus, setBookingStatus] = useState<
@@ -55,12 +62,15 @@ export default function CarDetailPage() {
   const totalCost = Math.round(defaultCost + tax);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-      setIsAuthenticated(true);
+    if (user) {
+      if (user.city && selectedCity === "Mumbai") setSelectedCity(user.city);
+      if (user.address && !address) setAddress(user.address);
+      if (user.phone && !phone) setPhone(user.phone);
+      if (user.licenseNumber && !licenseNumber) setLicenseNumber(user.licenseNumber);
     }
-  }, []);
+  }, [user]);
+
+
 
   const handleBookNow = async () => {
     if (!isAuthenticated) {
@@ -68,9 +78,52 @@ export default function CarDetailPage() {
       return;
     }
 
-    if (!address.trim()) {
-      alert("Please enter your delivery address");
-      return;
+    const missingDetails = !user.phone || !user.licenseNumber || !user.address || !user.city;
+
+    if (missingDetails) {
+      if (!phone.trim() || !licenseNumber.trim() || !address.trim() || !selectedCity.trim()) {
+        toast({
+          title: "Incomplete Details",
+          description: "Please fill in all required details before proceeding.",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      setIsProfileUpdating(true);
+      setProfileUpdateError("");
+      try {
+        const token = localStorage.getItem("auth_token");
+        const response = await fetch("/api/users/profile", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            city: selectedCity,
+            address,
+            phone,
+            licenseNumber,
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          updateUser(data.user);
+        } else {
+          const err = await response.json();
+          setProfileUpdateError(err.error || "Failed to save details");
+          setIsProfileUpdating(false);
+          return;
+        }
+      } catch (err) {
+        setProfileUpdateError("Network error occurred while saving profile.");
+        setIsProfileUpdating(false);
+        return;
+      } finally {
+        setIsProfileUpdating(false);
+      }
     }
 
     setIsVerifying(true);
@@ -193,7 +246,7 @@ export default function CarDetailPage() {
             ← Back to All Cars
           </Link>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-6">
               {/* Hero Image */}
@@ -331,205 +384,245 @@ export default function CarDetailPage() {
                 </div>
               </Card>
             </div>
-
             <div className="lg:col-span-1">
-              <Card className="p-6 bg-gradient-to-b from-card to-card border-border sticky top-24 space-y-6">
-                <div className="flex justify-between items-center bg-card">
-                  <h3 className="text-xl font-bold">Booking Summary</h3>
-                  <button
-                    onClick={() => setIsFavorite(!isFavorite)}
-                    className="p-2 bg-background/50 rounded-full hover:bg-secondary transition-colors"
-                  >
-                    <Heart
-                      className={`w-5 h-5 ${isFavorite ? "fill-red-500 text-red-500" : "text-muted-foreground"}`}
-                    />
-                  </button>
-                </div>
-                {/* User Context */}
-                {user && (
-                  <div className="p-3 bg-primary/5 rounded-lg border border-primary/20 space-y-1">
-                    <p className="text-xs text-muted-foreground font-semibold uppercase">
-                      Booking as
-                    </p>
-                    <p className="text-sm font-bold text-foreground">
-                      {user.fullName}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {user.email}
-                    </p>
-                  </div>
-                )}
-
-                <div className="space-y-2">
-                  <p className="text-sm text-muted-foreground">Price</p>
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-4xl font-bold text-primary">
-                      ₹{car.price.toLocaleString()}
-                    </span>
-                    <span className="text-sm text-muted-foreground">/hr</span>
-                  </div>
-                </div>
-
-                {/* Booking Type */}
-                <div className="flex bg-secondary rounded-lg p-1">
-                  <button
-                    onClick={() => setBookingType("hourly")}
-                    className={`flex-1 py-2 text-sm font-semibold rounded-md transition-all ${bookingType === "hourly" ? "bg-background text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
-                  >
-                    Hourly Rental
-                  </button>
-                  <button
-                    onClick={() => setBookingType("subscription")}
-                    className={`flex-1 py-2 text-sm font-semibold rounded-md transition-all ${bookingType === "subscription" ? "bg-background text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
-                  >
-                    Subscription
-                  </button>
-                </div>
-
-                {/* Selection */}
-                <div className="space-y-4">
-                  {bookingType === "hourly" ? (
-                    <div>
-                      <label className="text-sm font-semibold text-foreground mb-2 block">
-                        Hours
-                      </label>
-                      <input
-                        type="number"
-                        min="1"
-                        value={hours}
-                        onChange={(e) => setHours(Number(e.target.value))}
-                        className="w-full px-3 py-2 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+              <div className="sticky top-24 space-y-6">
+                <Card className="p-6 bg-gradient-to-b from-card to-card border-border space-y-6">
+                  <div className="flex justify-between items-center bg-card">
+                    <h3 className="text-xl font-bold">Booking Summary</h3>
+                    <button
+                      onClick={() => setIsFavorite(!isFavorite)}
+                      className="p-2 bg-background/50 rounded-full hover:bg-secondary transition-colors"
+                    >
+                      <Heart
+                        className={`w-5 h-5 ${isFavorite ? "fill-red-500 text-red-500" : "text-muted-foreground"}`}
                       />
-                    </div>
-                  ) : (
-                    <div>
-                      <label className="text-sm font-semibold text-foreground mb-2 block">
-                        Subscription Days (Min 7)
-                      </label>
-                      <input
-                        type="number"
-                        min="7"
-                        value={subscriptionDays}
-                        onChange={(e) =>
-                          setSubscriptionDays(
-                            Math.max(7, Number(e.target.value)),
-                          )
-                        }
-                        className="w-full px-3 py-2 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
-                      />
-                      <p className="text-xs text-green-500 mt-2">
-                        Special discounted rate applied!
+                    </button>
+                  </div>
+                  {/* User Context */}
+                  {user && (
+                    <div className="p-3 bg-primary/5 rounded-lg border border-primary/20 space-y-1">
+                      <p className="text-xs text-muted-foreground font-semibold uppercase">
+                        Booking as
+                      </p>
+                      <p className="text-sm font-bold text-foreground">
+                        {user.fullName}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {user.email}
                       </p>
                     </div>
                   )}
 
-                  {/* City Selection */}
-                  <div>
-                    <label className="text-sm font-semibold text-foreground mb-2 block flex items-center gap-1">
-                      <MapPin className="w-3 h-3 text-primary" /> Delivery City
-                    </label>
-                    <select
-                      value={selectedCity}
-                      onChange={(e) => setSelectedCity(e.target.value)}
-                      className="w-full px-3 py-2 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  <div className="space-y-2">
+                    <p className="text-sm text-muted-foreground">Price</p>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-4xl font-bold text-primary">
+                        ₹{car.price.toLocaleString()}
+                      </span>
+                      <span className="text-sm text-muted-foreground">/hr</span>
+                    </div>
+                  </div>
+
+                  {/* Booking Type */}
+                  <div className="flex bg-secondary rounded-lg p-1">
+                    <button
+                      onClick={() => setBookingType("hourly")}
+                      className={`flex-1 py-2 text-sm font-semibold rounded-md transition-all ${bookingType === "hourly" ? "bg-background text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
                     >
-                      {INDIAN_CITIES.map(city => (
-                        <option key={city} value={city}>{city}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Address Prompt */}
-                  <div>
-                    <label className="text-sm font-semibold text-foreground mb-2 block">
-                      Delivery Address
-                    </label>
-                    <textarea
-                      placeholder="Street name, landmark, etc."
-                      value={address}
-                      onChange={(e) => setAddress(e.target.value)}
-                      rows={2}
-                      className="w-full px-3 py-2 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm"
-                    />
-                  </div>
-                </div>
-
-                {/* Pricing Summary */}
-                <div className="space-y-2 pt-4 border-t border-border">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">
-                      {bookingType === "hourly"
-                        ? `${hours} hours`
-                        : `${subscriptionDays} days`}
-                    </span>
-                    <span className="font-semibold text-foreground">
-                      ₹{defaultCost.toLocaleString()}
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">
-                      Taxes & Fees (18%)
-                    </span>
-                    <span className="font-semibold text-foreground">
-                      ₹{tax.toLocaleString()}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Total */}
-                <div className="pt-4 border-t border-border space-y-4">
-                  <div className="flex justify-between items-center">
-                    <span className="font-bold text-foreground">Total</span>
-                    <span className="text-2xl font-bold text-primary">
-                      ₹{totalCost.toLocaleString()}
-                    </span>
-                  </div>
-
-                  {/* CTA */}
-                  <div className="space-y-3">
-                    <Button
-                      onClick={handleBookNow}
-                      disabled={isBooking || bookingStatus === "success"}
-                      className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6 font-semibold text-lg transition-all active:scale-[0.98] relative overflow-hidden"
+                      Hourly Rental
+                    </button>
+                    <button
+                      onClick={() => setBookingType("subscription")}
+                      className={`flex-1 py-2 text-sm font-semibold rounded-md transition-all ${bookingType === "subscription" ? "bg-background text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
                     >
-                      {isVerifying ? (
-                        <span className="flex items-center gap-2">
-                          <Loader2 className="w-5 h-5 animate-spin" />
-                          Verifying availability...
-                        </span>
-                      ) : isBooking ? (
-                        <span className="flex items-center gap-2">
-                          <Loader2 className="w-5 h-5 animate-spin" />
-                          Processing...
-                        </span>
-                      ) : bookingStatus === "success" ? (
-                        <span className="flex items-center gap-2">
-                          <CheckCircle2 className="w-5 h-5 text-green-400" />
-                          Booked!
-                        </span>
-                      ) : (
-                        "Book Now"
-                      )}
-                    </Button>
+                      Subscription
+                    </button>
+                  </div>
 
-                    {bookingStatus !== "idle" &&
-                      bookingStatus !== "success" && (
-                        <p className="text-xs text-red-500 text-center bg-red-500/10 p-2 rounded border border-red-500/20">
-                          {bookingStatus === "error"
-                            ? "Booking failed. Please try again."
-                            : bookingStatus}
+                  {/* Selection */}
+                  <div className="space-y-4">
+                    {bookingType === "hourly" ? (
+                      <div>
+                        <label className="text-sm font-semibold text-foreground mb-2 block">
+                          Hours
+                        </label>
+                        <input
+                          type="number"
+                          min="1"
+                          value={hours}
+                          onChange={(e) => setHours(Number(e.target.value))}
+                          className="w-full px-3 py-2 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                        />
+                      </div>
+                    ) : (
+                      <div>
+                        <label className="text-sm font-semibold text-foreground mb-2 block">
+                          Subscription Days (Min 7)
+                        </label>
+                        <input
+                          type="number"
+                          min="7"
+                          value={subscriptionDays}
+                          onChange={(e) =>
+                            setSubscriptionDays(
+                              Math.max(7, Number(e.target.value)),
+                            )
+                          }
+                          className="w-full px-3 py-2 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                        />
+                        <p className="text-xs text-green-500 mt-2">
+                          Special discounted rate applied!
                         </p>
-                      )}
-                  </div>
-                </div>
+                      </div>
+                    )}
 
-                {/* Info */}
-                <div className="text-xs text-muted-foreground text-center">
-                  <p>✓ Free Cancellation up to 24 hours</p>
-                  <p>✓ 24/7 Customer Support</p>
-                  <p>✓ Comprehensive Insurance</p>
-                </div>
-              </Card>
+                    {/* City Selection */}
+                    <div>
+                      <label className="text-sm font-semibold text-foreground mb-2 block flex items-center gap-1">
+                        <MapPin className="w-3 h-3 text-primary" /> Delivery City
+                      </label>
+                      <select
+                        value={selectedCity}
+                        onChange={(e) => setSelectedCity(e.target.value)}
+                        className="w-full px-3 py-2 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                      >
+                        {INDIAN_CITIES.map(city => (
+                          <option key={city} value={city}>{city}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Address Prompt */}
+                    <div>
+                      <label className="text-sm font-semibold text-foreground mb-2 block">
+                        Delivery Address
+                      </label>
+                      <textarea
+                        placeholder="Street name, landmark, etc."
+                        value={address}
+                        onChange={(e) => setAddress(e.target.value)}
+                        rows={2}
+                        className="w-full px-3 py-2 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Pricing Summary */}
+                  <div className="space-y-2 pt-4 border-t border-border">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">
+                        {bookingType === "hourly"
+                          ? `${hours} hours`
+                          : `${subscriptionDays} days`}
+                      </span>
+                      <span className="font-semibold text-foreground">
+                        ₹{defaultCost.toLocaleString()}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">
+                        Taxes & Fees (18%)
+                      </span>
+                      <span className="font-semibold text-foreground">
+                        ₹{tax.toLocaleString()}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Total */}
+                  <div className="pt-4 border-t border-border space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="font-bold text-foreground">Total</span>
+                      <span className="text-2xl font-bold text-primary">
+                        ₹{totalCost.toLocaleString()}
+                      </span>
+                    </div>
+
+                    {/* CTA */}
+                    <div className="space-y-3">
+                      <Button
+                        onClick={handleBookNow}
+                        disabled={isBooking || bookingStatus === "success"}
+                        className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6 font-semibold text-lg transition-all active:scale-[0.98] relative overflow-hidden"
+                      >
+                        {isVerifying ? (
+                          <span className="flex items-center gap-2">
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                            Verifying availability...
+                          </span>
+                        ) : isBooking ? (
+                          <span className="flex items-center gap-2">
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                            {isProfileUpdating ? "Saving details..." : "Processing..."}
+                          </span>
+                        ) : bookingStatus === "success" ? (
+                          <span className="flex items-center gap-2">
+                            <CheckCircle2 className="w-5 h-5 text-green-400" />
+                            Booked!
+                          </span>
+                        ) : (
+                          isAuthenticated && (!user.phone || !user.licenseNumber || !user.address || !user.city) ? "Save requirements and book" : "Book Now"
+                        )}
+                      </Button>
+
+                      {bookingStatus !== "idle" &&
+                        bookingStatus !== "success" && (
+                          <p className="text-xs text-red-500 text-center bg-red-500/10 p-2 rounded border border-red-500/20">
+                            {bookingStatus === "error"
+                              ? "Booking failed. Please try again."
+                              : bookingStatus}
+                          </p>
+                        )}
+                    </div>
+                  </div>
+
+                  {/* Info */}
+                  <div className="text-xs text-muted-foreground text-center">
+                    <p>✓ Free Cancellation up to 24 hours</p>
+                    <p>✓ 24/7 Customer Support</p>
+                    <p>✓ Comprehensive Insurance</p>
+                  </div>
+                </Card>
+
+                {isAuthenticated && (!user.phone || !user.licenseNumber || !user.address || !user.city) && (
+                  <Card className="p-6 bg-primary/10 border border-primary/20 space-y-4 rounded-xl shadow-lg relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-1 h-full bg-primary" />
+                    <div className="flex items-center gap-2 text-primary font-bold">
+                      <Shield className="w-5 h-5 flex-shrink-0" />
+                      <h3 className="text-lg">Required Details</h3>
+                    </div>
+                    <p className="text-sm text-foreground font-medium">
+                      For your safety and a seamless booking process, please complete your profile details below.
+                    </p>
+                    
+                    {profileUpdateError && (
+                      <p className="text-xs text-destructive bg-destructive/10 p-2 rounded border border-destructive/20">{profileUpdateError}</p>
+                    )}
+
+                    <div className="space-y-3 pt-2">
+                      <div>
+                        <input 
+                          type="text" 
+                          placeholder="Phone Number (+91...)"
+                          value={phone}
+                          onChange={(e) => setPhone(e.target.value)}
+                          className="w-full px-3 py-2 bg-background border border-border rounded-lg focus:ring-2 focus:ring-primary/50 text-sm"
+                        />
+                      </div>
+                      <div>
+                        <input 
+                          type="text" 
+                          placeholder="Driver's License Number"
+                          value={licenseNumber}
+                          onChange={(e) => setLicenseNumber(e.target.value)}
+                          className="w-full px-3 py-2 bg-background border border-border rounded-lg focus:ring-2 focus:ring-primary/50 text-sm"
+                        />
+                      </div>
+                      <p className="text-xs text-muted-foreground italic">City and Address from the summary below will also be saved.</p>
+                    </div>
+                  </Card>
+                )}
+              </div>
             </div>
           </div>
         </div>

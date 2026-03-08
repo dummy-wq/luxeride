@@ -155,8 +155,8 @@ export function CarsShowcase() {
             ))
           ) : filteredCars.length > 0 ? (
             filteredCars.map((car) => {
-              const shaded = isShadedOut(car.id);
               const availability = getAvailability(car.id);
+              const shaded = isShadedOut(car.id) || availability !== "Available";
 
               return (
                 <Card
@@ -186,7 +186,7 @@ export function CarsShowcase() {
                     {shaded && (
                       <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex items-center justify-center z-10">
                         <span className="text-white font-black text-xs uppercase tracking-tighter border-2 border-white/50 px-3 py-1 rotate-12">
-                          Currently Reserved
+                          {availability === "Available" ? "Reservation Required" : availability}
                         </span>
                       </div>
                     )}

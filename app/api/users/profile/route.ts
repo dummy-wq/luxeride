@@ -41,7 +41,7 @@ export async function PUT(request: NextRequest) {
     const updates = await request.json();
 
     // Prevent updating sensitive fields
-    const { _id, createdAt, passwordHash, email, ...safeUpdates } = updates;
+    const { _id, createdAt, passwordHash, email, walletBalance, isActive, isBanned, role, ...safeUpdates } = updates;
 
     const updatedUser = await UserModel.updateProfile(auth.userId, safeUpdates);
 

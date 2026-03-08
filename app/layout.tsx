@@ -3,6 +3,7 @@ import { Montserrat, Inter } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { ThemeProvider } from "@/components/theme-provider";
 import { PageTransition } from "@/components/page-transition";
+import { Toaster } from "@/components/ui/toaster";
 import "./globals.css";
 
 const montserrat = Montserrat({
@@ -64,6 +65,7 @@ export default function RootLayout({
         <AuthProvider>
           <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
             <PageTransition>{children}</PageTransition>
+            <Toaster />
           </ThemeProvider>
         </AuthProvider>
         <Analytics />

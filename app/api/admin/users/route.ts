@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
         const auth = verifyAuth(request);
 
         // Auth object holds the decrypted token data
-        if (!auth || (auth as any).role !== "admin") {
+        if (!auth || auth.role !== "admin") {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
