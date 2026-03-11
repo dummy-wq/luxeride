@@ -3,6 +3,7 @@ import { UserModel } from "@/lib/db/models/user";
 import jwt from "jsonwebtoken";
 
 import { signupSchema } from "@/lib/schemas/auth";
+import { env } from "@/lib/env";
 
 export async function POST(request: NextRequest) {
   try {
@@ -30,7 +31,7 @@ export async function POST(request: NextRequest) {
     // Generate JWT token
     const token = jwt.sign(
       { userId: userId.toString(), email },
-      process.env.JWT_SECRET!,
+      env.JWT_SECRET,
       { expiresIn: "7d" },
     );
 
@@ -54,7 +55,7 @@ export async function POST(request: NextRequest) {
       name: "auth_token",
       value: token,
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: env.NODE_ENV === "production",
       sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60, // 7 days
     });

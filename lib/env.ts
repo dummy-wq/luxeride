@@ -1,0 +1,40 @@
+/**
+ * Centralized environment variable validation.
+ * Throws a clear error at startup if required vars are missing,
+ * instead of crashing later with a cryptic `!` assertion failure.
+ */
+
+function getRequiredEnv(key: string): string {
+  const value = process.env[key];
+  if (!value) {
+    throw new Error(
+      `❌ Missing required environment variable: ${key}\n` +
+      `   Please set it in .env.local or your hosting provider's dashboard.\n` +
+      `   See .env.example for the expected variables.`
+    );
+  }
+  return value;
+}
+
+export const env = {
+  /** MongoDB connection string (required) */
+  MONGODB_URI: getRequiredEnv('MONGODB_URI'),
+
+  /** MongoDB database name (defaults to "luxeride") */
+  MONGODB_DB: process.env.MONGODB_DB || 'luxeride',
+
+  /** JWT signing secret (required) */
+  JWT_SECRET: getRequiredEnv('JWT_SECRET'),
+
+  /** Admin email — if unset, falls back to "admin" in dev only */
+  ADMIN_EMAIL: process.env.ADMIN_EMAIL,
+
+  /** Admin password — if unset, falls back to "pass" in dev only */
+  ADMIN_PASSWORD: process.env.ADMIN_PASSWORD,
+
+  /** Current environment */
+  NODE_ENV: process.env.NODE_ENV || 'development',
+
+  /** Convenience boolean */
+  isDev: process.env.NODE_ENV === 'development',
+} as const;

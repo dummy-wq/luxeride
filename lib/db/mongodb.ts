@@ -1,18 +1,15 @@
 import { MongoClient, Db } from 'mongodb'
 import { initializeDatabase } from './init'
+import { env } from '../env'
 
-const uri = process.env.MONGODB_URI
-
-if (!uri) {
-  throw new Error('Please define the MONGODB_URI environment variable')
-}
+const uri = env.MONGODB_URI
 
 const options = {}
 
 let client: MongoClient
 let clientPromise: Promise<MongoClient>
 
-if (process.env.NODE_ENV === 'development') {
+if (env.isDev) {
   // In development mode, use a global variable so that the value
   // is preserved across module reloads caused by HMR (Hot Module Replacement).
   let globalWithMongo = global as typeof globalThis & {
@@ -33,7 +30,7 @@ if (process.env.NODE_ENV === 'development') {
 export async function connectToDatabase() {
   try {
     const client = await clientPromise
-    const db: Db = client.db(process.env.MONGODB_DB || 'luxeride')
+    const db: Db = client.db(env.MONGODB_DB)
 
     // Initialize indexes on first connection
     // We can just rely on the existing init logic, just making sure it runs once

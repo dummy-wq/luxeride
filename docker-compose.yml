@@ -12,6 +12,8 @@ services:
       - MONGODB_DB=${MONGODB_DB}
       - JWT_SECRET=${JWT_SECRET}
       - NODE_ENV=${NODE_ENV}
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
     depends_on:
       - mongodb
 
@@ -23,7 +25,7 @@ services:
       - "27017:27017"
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USER:-admin}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD:-password123}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}
       - MONGO_INITDB_DATABASE=${MONGODB_DB:-luxeride}
     volumes:
       - mongodb_data:/data/db

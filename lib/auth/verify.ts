@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server'
 import jwt from 'jsonwebtoken'
+import { env } from '../env'
 
 export interface AuthPayload {
   userId: string
@@ -19,7 +20,7 @@ export function verifyAuth(request: NextRequest): AuthPayload | null {
 
     const decoded = jwt.verify(
       token,
-      process.env.JWT_SECRET!
+      env.JWT_SECRET
     ) as AuthPayload
 
     return decoded

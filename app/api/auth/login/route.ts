@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { UserModel } from "@/lib/db/models/user";
 import jwt from "jsonwebtoken";
 import { loginSchema } from "@/lib/schemas/auth";
+import { env } from "@/lib/env";
 
 export async function POST(request: NextRequest) {
   try {
@@ -19,14 +20,13 @@ export async function POST(request: NextRequest) {
     const { email, password } = validation.data;
 
     // Admin check - Fallback to "admin"/"pass" only in development
-    const isDev = process.env.NODE_ENV === "development";
-    const adminEmail = process.env.ADMIN_EMAIL || (isDev ? "admin" : undefined);
-    const adminPassword = process.env.ADMIN_PASSWORD || (isDev ? "pass" : undefined);
+    const adminEmail = env.ADMIN_EMAIL || (env.isDev ? "admin" : undefined);
+    const adminPassword = env.ADMIN_PASSWORD || (env.isDev ? "pass" : undefined);
 
     if (adminEmail && adminPassword && email?.toLowerCase() === adminEmail.toLowerCase() && password === adminPassword) {
       const token = jwt.sign(
         { userId: "admin", email: "admin", role: "admin" },
-        process.env.JWT_SECRET!,
+        env.JWT_SECRET,
         { expiresIn: "7d" },
       );
 
@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
       );
       response.cookies.set({
         name: "auth_token", value: token, httpOnly: true,
-        secure: process.env.NODE_ENV === "production", sameSite: "lax", maxAge: 7 * 24 * 60 * 60,
+        secure: env.NODE_ENV === "production", sameSite: "lax", maxAge: 7 * 24 * 60 * 60,
       });
       return response;
     }
@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
     // Generate JWT token
     const token = jwt.sign(
       { userId: user._id?.toString(), email: user.email },
-      process.env.JWT_SECRET!,
+      env.JWT_SECRET,
       { expiresIn: "7d" },
     );
 
@@ -108,7 +108,7 @@ export async function POST(request: NextRequest) {
       name: "auth_token",
       value: token,
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: env.NODE_ENV === "production",
       sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60, // 7 days
     });

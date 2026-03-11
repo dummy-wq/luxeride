@@ -184,11 +184,15 @@ Create `.env.local` in the project root:
 
 ```env
 # MongoDB Configuration
-MONGODB_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/luxeride
+MONGODB_URI=<your-mongodb-connection-string>
 MONGODB_DB=luxeride
 
 # Authentication
-JWT_SECRET=your-secret-key-here-change-in-production
+JWT_SECRET=<generate-a-strong-random-string>
+
+# Admin Credentials
+ADMIN_EMAIL=<your-admin-email>
+ADMIN_PASSWORD=<your-admin-password>
 
 # Environment
 NODE_ENV=development
@@ -241,16 +245,16 @@ curl -X POST http://localhost:3000/api/auth/signup \
   -H "Content-Type: application/json" \
   -d '{
     "fullName": "Test User",
-    "email": "test@example.com",
-    "password": "password123"
+    "email": "user@example.com",
+    "password": "yourpassword"
   }'
 
 # Login
 curl -X POST http://localhost:3000/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{
-    "email": "test@example.com",
-    "password": "password123"
+    "email": "user@example.com",
+    "password": "yourpassword"
   }'
 
 # Get Profile (replace TOKEN)

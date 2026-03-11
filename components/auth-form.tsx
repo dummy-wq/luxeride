@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Mail, Lock, User, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/context/auth-context";
 
 import { AuthResponse } from "@/lib/types";
 
@@ -15,6 +16,7 @@ interface AuthFormProps {
 
 export function AuthForm({ type, onSubmit }: AuthFormProps) {
   const router = useRouter();
+  const { login: authLogin } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
@@ -64,14 +66,12 @@ export function AuthForm({ type, onSubmit }: AuthFormProps) {
         throw new Error(data.error || `${type} failed`);
       }
 
-      // Store token
+      // Store token and update auth context immediately
       if (data.token) {
-        localStorage.setItem("auth_token", data.token);
+        const userData = data.user || { email: data.email };
+        authLogin(userData, data.token);
         if (data.userId) {
           localStorage.setItem("userId", data.userId);
-        }
-        if (data.user) {
-          localStorage.setItem("user", JSON.stringify(data.user));
         }
       }
 
@@ -82,7 +82,7 @@ export function AuthForm({ type, onSubmit }: AuthFormProps) {
       // Call onSubmit callback if provided
       onSubmit?.(data);
 
-      // Redirect after brief delay
+      // Redirect after brief delay (just enough to flash success message)
       setTimeout(() => {
         const user = data?.user || (data?.token ? data : null);
         if (user?.email === "admin" || user?.role === "admin") {
@@ -90,7 +90,7 @@ export function AuthForm({ type, onSubmit }: AuthFormProps) {
         } else {
           router.push(type === "login" ? "/" : "/onboarding");
         }
-      }, 1500);
+      }, 500);
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : `${type} failed. Please try again.`;
       setError(errorMessage);
