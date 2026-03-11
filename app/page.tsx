@@ -1,6 +1,7 @@
 import { Navigation } from "@/components/navigation";
 import { Hero } from "@/components/hero";
 import { CarsShowcase } from "@/components/cars-showcase";
+import { Contact } from "@/components/contact";
 
 export default function Home() {
   return (
@@ -8,6 +9,7 @@ export default function Home() {
       <Navigation />
       <Hero />
       <CarsShowcase />
+      <Contact />
     </main>
   );
 }

@@ -95,10 +95,8 @@ export default function HelpAndSupportPage() {
           </div>
         </div>
 
-        {/* Contact Us Integration */}
-        <div className="pt-10 border-t border-border">
-          <Contact />
-        </div>
+        {/* Contact Us Widget */}
+        <Contact />
       </div>
     </main>
   );

@@ -19,10 +19,13 @@ export async function POST(request: NextRequest) {
     const { email, password } = validation.data;
 
     // Admin check
-    if (email?.toLowerCase() === "admin" && password === "pass") {
+    const adminEmail = process.env.ADMIN_EMAIL;
+    const adminPassword = process.env.ADMIN_PASSWORD;
+
+    if (adminEmail && adminPassword && email?.toLowerCase() === adminEmail.toLowerCase() && password === adminPassword) {
       const token = jwt.sign(
         { userId: "admin", email: "admin", role: "admin" },
-        process.env.JWT_SECRET || "your-secret-key",
+        process.env.JWT_SECRET!,
         { expiresIn: "7d" },
       );
 
@@ -79,7 +82,7 @@ export async function POST(request: NextRequest) {
     // Generate JWT token
     const token = jwt.sign(
       { userId: user._id?.toString(), email: user.email },
-      process.env.JWT_SECRET || "your-secret-key",
+      process.env.JWT_SECRET!,
       { expiresIn: "7d" },
     );
 

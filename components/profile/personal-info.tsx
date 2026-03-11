@@ -29,12 +29,12 @@ export function PersonalInfo({ user, isSaving, onSave }: PersonalInfoProps) {
 
   return (
     <div className="space-y-6">
-      {/* Personal Information */}
+      {/* User Details */}
       <Card className="p-6 bg-card border-border space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="text-xl font-bold text-foreground flex items-center gap-2">
             <UserIcon className="w-5 h-5 text-primary" />
-            Personal Information
+            User Details
           </h3>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-border">
@@ -96,28 +96,10 @@ export function PersonalInfo({ user, isSaving, onSave }: PersonalInfoProps) {
               </p>
             )}
           </div>
-        </div>
-        {!isEditing && (
-          <Button
-            onClick={() => setIsEditing(true)}
-            className="w-full mt-4 bg-primary hover:bg-primary/90 text-primary-foreground"
-          >
-            Edit Information
-          </Button>
-        )}
-      </Card>
-
-      {/* Address */}
-      <Card className="p-6 bg-card border-border space-y-4">
-        <h3 className="text-xl font-bold text-foreground flex items-center gap-2">
-          <MapPin className="w-5 h-5 text-primary" />
-          Address
-        </h3>
-        <div className="space-y-3 pt-4 border-t border-border">
-          <div>
+          <div className="md:col-span-2">
             <label className="text-sm text-muted-foreground">Current Address</label>
             {isEditing ? (
-              <div className="space-y-2">
+              <div className="space-y-2 mt-1">
                 <input
                   type="text"
                   placeholder="Street Address"
@@ -141,13 +123,21 @@ export function PersonalInfo({ user, isSaving, onSave }: PersonalInfoProps) {
                 </select>
               </div>
             ) : (
-              <p className="text-foreground font-semibold">
+              <p className="text-foreground font-semibold mt-1">
                 {user.address || "Not provided"}{" "}
                 {user.city ? `, ${user.city}` : ""}
               </p>
             )}
           </div>
         </div>
+        {!isEditing && (
+          <Button
+            onClick={() => setIsEditing(true)}
+            className="w-full mt-4 bg-primary hover:bg-primary/90 text-primary-foreground"
+          >
+            Edit Information
+          </Button>
+        )}
       </Card>
 
       {/* Save/Cancel Buttons */}

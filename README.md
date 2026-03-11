@@ -184,7 +184,7 @@ Create `.env.local` in the project root:
 
 ```env
 # MongoDB Configuration
-MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/luxeride
+MONGODB_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/luxeride
 MONGODB_DB=luxeride
 
 # Authentication
