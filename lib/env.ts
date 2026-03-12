@@ -4,8 +4,7 @@
  * instead of crashing later with a cryptic `!` assertion failure.
  */
 
-function getRequiredEnv(key: string): string {
-  const value = process.env[key];
+function getRequiredEnv(key: string, value: string | undefined): string {
   if (!value) {
     throw new Error(
       `❌ Missing required environment variable: ${key}\n` +
@@ -18,13 +17,13 @@ function getRequiredEnv(key: string): string {
 
 export const env = {
   /** MongoDB connection string (required) */
-  MONGODB_URI: getRequiredEnv('MONGODB_URI'),
+  MONGODB_URI: getRequiredEnv('MONGODB_URI', process.env.MONGODB_URI),
 
   /** MongoDB database name (defaults to "luxeride") */
   MONGODB_DB: process.env.MONGODB_DB || 'luxeride',
 
   /** JWT signing secret (required) */
-  JWT_SECRET: getRequiredEnv('JWT_SECRET'),
+  JWT_SECRET: getRequiredEnv('JWT_SECRET', process.env.JWT_SECRET),
 
   /** Admin email — if unset, falls back to "admin" in dev only */
   ADMIN_EMAIL: process.env.ADMIN_EMAIL,

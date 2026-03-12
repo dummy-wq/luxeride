@@ -12,7 +12,7 @@ let clientPromise: Promise<MongoClient>
 if (env.isDev) {
   // In development mode, use a global variable so that the value
   // is preserved across module reloads caused by HMR (Hot Module Replacement).
-  let globalWithMongo = global as typeof globalThis & {
+  let globalWithMongo = globalThis as typeof globalThis & {
     _mongoClientPromise?: Promise<MongoClient>
   }
 
@@ -35,9 +35,9 @@ export async function connectToDatabase() {
     // Initialize indexes on first connection
     // We can just rely on the existing init logic, just making sure it runs once
     // A robust way to ensure it only runs once per server startup
-    if (!global.hasOwnProperty('_mongoInitialized')) {
+    if (!('_mongoInitialized' in globalThis)) {
       await initializeDatabase(db)
-        ; (global as any)._mongoInitialized = true
+        ; (globalThis as any)._mongoInitialized = true
     }
 
     return { client, db }
