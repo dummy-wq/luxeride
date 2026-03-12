@@ -150,6 +150,7 @@ export function ProfileContent() {
               payments={payments} 
               activeTab={activeTab} 
               setActiveTab={setActiveTab} 
+              onLogout={logout}
             />
           )}
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { User as UserIcon, Wallet } from "lucide-react";
+import { User as UserIcon, Wallet, LogOut } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { UserProfile, Payment } from "@/lib/types";
 
@@ -9,9 +9,10 @@ interface ProfileSidebarProps {
   payments: Payment[];
   activeTab: string;
   setActiveTab: (tab: string) => void;
+  onLogout: () => void;
 }
 
-export function ProfileSidebar({ user, payments, activeTab, setActiveTab }: ProfileSidebarProps) {
+export function ProfileSidebar({ user, payments, activeTab, setActiveTab, onLogout }: ProfileSidebarProps) {
   const totalSpent = payments
     .filter(p => p.status !== "refunded" && p.status !== "refunded_to_wallet" && p.status !== "failed")
     .reduce((acc, p) => acc + p.amount, 0);
@@ -81,6 +82,17 @@ export function ProfileSidebar({ user, payments, activeTab, setActiveTab }: Prof
             {tab.label}
           </button>
         ))}
+      </div>
+      
+      {/* Sign Out */}
+      <div className="pt-4 border-t border-border">
+        <button
+          onClick={onLogout}
+          className="w-full flex items-center justify-center gap-2 px-3 py-3 rounded-lg text-destructive font-bold hover:bg-destructive/10 transition-colors border border-destructive/20"
+        >
+          <LogOut className="w-5 h-5" />
+          SIGN OUT
+        </button>
       </div>
     </Card>
   );
