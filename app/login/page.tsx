@@ -60,9 +60,22 @@ export default function LoginPage() {
         </div>
 
         {/* Additional Info */}
-        <div className="w-full bg-primary/5 border border-primary/20 rounded-lg p-3 text-center text-sm">
-          <p className="text-muted-foreground text-xs">
-            Use any email to sign in for this demo
+        <div className="w-full space-y-4">
+          <div className="bg-primary/5 border border-primary/20 rounded-lg p-3 text-center text-sm">
+            <p className="text-muted-foreground text-xs">
+              Use any email to sign in for this demo
+            </p>
+          </div>
+          
+          <p className="text-center text-xs text-muted-foreground">
+            By signing in, you agree to our{" "}
+            <Link href="/terms-and-privacy" target="_blank" className="text-primary hover:text-primary/80 transition-colors">
+              Terms of Service
+            </Link>{" "}
+            and{" "}
+            <Link href="/terms-and-privacy" target="_blank" className="text-primary hover:text-primary/80 transition-colors">
+              Privacy Policy
+            </Link>
           </p>
         </div>
       </div>
