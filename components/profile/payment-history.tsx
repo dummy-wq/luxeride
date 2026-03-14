@@ -3,12 +3,49 @@
 import { CreditCard, Download } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Payment } from "@/lib/types";
+import { siteConfig } from "@/lib/config";
 
 interface PaymentHistoryProps {
   payments: Payment[];
 }
 
 export function PaymentHistory({ payments }: PaymentHistoryProps) {
+  const handleDownload = (payment: Payment) => {
+    const tax = payment.amount * 0.18; // Reverse-engineer tax roughly
+    const base = payment.amount - tax;
+    
+    const receiptContent = `
+========================================
+             ${siteConfig.brand.name.toUpperCase()} RECEIPT
+========================================
+Receipt ID:  ${payment.id || payment.transactionId || "N/A"}
+Date:        ${new Date(payment.createdAt).toLocaleString()}
+
+Vehicle:     ${payment.carName || "N/A"}
+Method:      ${payment.paymentMethod.toUpperCase()}
+Status:      ${payment.status.toUpperCase()}
+
+----------------------------------------
+Subtotal:    ₹${base.toFixed(2)}
+Taxes (18%): ₹${tax.toFixed(2)}
+========================================
+TOTAL PAID:  ₹${payment.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+========================================
+${siteConfig.brand.email} | ${siteConfig.brand.phone}
+========================================
+    `.trim();
+
+    const blob = new Blob([receiptContent], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `LuxeRide_Receipt_${payment.id || "payment"}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <Card className="bg-card border-border overflow-hidden">
       <div className="px-6 py-4 border-b border-border bg-secondary/30">
@@ -61,7 +98,10 @@ export function PaymentHistory({ payments }: PaymentHistoryProps) {
                     </span>
                   </td>
                   <td className="px-6 py-4 text-sm">
-                    <button className="text-primary hover:text-primary/80 transition-colors flex items-center gap-1">
+                    <button 
+                      onClick={() => handleDownload(payment)}
+                      className="text-primary hover:text-primary/80 transition-colors flex items-center gap-1"
+                    >
                       <Download className="w-4 h-4" />
                       Receipt
                     </button>

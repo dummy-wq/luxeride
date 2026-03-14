@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MessageCircle, X, Mail, Phone } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { siteConfig } from "@/lib/config";
 
 export function Contact() {
   const [isOpen, setIsOpen] = useState(false);
@@ -26,8 +27,8 @@ export function Contact() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     toast({
-      title: "Message sent!",
-      description: "Expect an email back within 24 hours.",
+      title: siteConfig.contact.successTitle,
+      description: siteConfig.contact.successDescription,
     });
     setIsOpen(false);
   };
@@ -43,7 +44,7 @@ export function Contact() {
           <div className="bg-primary p-4 flex justify-between items-center text-primary-foreground">
             <h3 className="font-bold flex items-center gap-2">
               <MessageCircle className="w-5 h-5" />
-              Contact Us
+              {siteConfig.contact.heading}
             </h3>
             <Button 
               variant="ghost" 
@@ -58,10 +59,10 @@ export function Contact() {
           <div className="p-4 space-y-4 max-h-[60vh] overflow-y-auto">
             <div className="text-sm text-foreground flex flex-col gap-2 mb-4 p-3 bg-secondary/50 rounded-lg">
               <p className="flex items-center gap-2">
-                <Phone className="w-4 h-4 text-primary" /> +91 800-LUXERIDE
+                <Phone className="w-4 h-4 text-primary" /> {siteConfig.brand.phone}
               </p>
               <p className="flex items-center gap-2">
-                <Mail className="w-4 h-4 text-primary" /> support@luxeride.in
+                <Mail className="w-4 h-4 text-primary" /> {siteConfig.brand.email}
               </p>
             </div>
             
@@ -91,7 +92,7 @@ export function Contact() {
                 ></textarea>
               </div>
               <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold">
-                Send Message
+                {siteConfig.contact.sendLabel}
               </Button>
             </form>
           </div>

@@ -181,6 +181,7 @@ export default function CarDetailPage() {
           carId: car.id,
           carName: car.name,
           carPrice: car.price,
+          carImage: car.image,
           startDate,
           endDate,
           selectedDays: null,
@@ -239,12 +240,12 @@ export default function CarDetailPage() {
       <div className="pt-24 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
           {/* Back Button */}
-          <Link
-            href="/cars"
+          <button
+            onClick={() => router.back()}
             className="text-primary hover:text-primary/80 font-semibold mb-6 inline-block transition-colors"
           >
-            ← Back to All Cars
-          </Link>
+            ← Back
+          </button>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Main Content */}
@@ -255,7 +256,7 @@ export default function CarDetailPage() {
                   src={car.image}
                   alt={car.name}
                   fill
-                  className="object-cover"
+                  className={`object-cover ${car.name === "Jaguar XE" ? "scale-x-[-1]" : ""}`}
                   priority
                 />
               </Card>

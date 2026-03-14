@@ -26,6 +26,7 @@ export interface Booking {
   carId: number
   carName: string
   carPrice: number
+  carImage?: string
   startDate: string | Date
   endDate: string | Date
   pickupLocation: string

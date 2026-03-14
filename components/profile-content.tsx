@@ -12,7 +12,6 @@ import { Button } from "@/components/ui/button";
 import { ProfileSidebar } from "./profile/profile-sidebar";
 import { PersonalInfo } from "./profile/personal-info";
 import { PaymentHistory } from "./profile/payment-history";
-import { CountdownTimer } from "./ui/countdown-timer";
 
 import { Booking, Payment, UserProfile } from "@/lib/types";
 
@@ -158,58 +157,6 @@ export function ProfileContent() {
           <div className="lg:col-span-2 space-y-6">
             {activeTab === "overview" && user && (
               <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                {/* Active Bookings Section */}
-                {bookings.filter(b => b.status === "confirmed").length > 0 && (
-                  <div className="space-y-4">
-                    <h3 className="text-xl font-bold text-foreground flex items-center gap-2">
-                      <Zap className="w-5 h-5 text-primary" />
-                      Active Fleet
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {bookings
-                        .filter(b => b.status === "confirmed")
-                        .map((booking) => (
-                          <Card
-                            key={booking.id}
-                            className="p-4 bg-card border-primary/20 border-2 relative overflow-hidden group hover:shadow-xl transition-all"
-                          >
-                            <div className="flex gap-4">
-                              <div className="w-24 h-24 bg-white p-2 rounded-xl flex-shrink-0 shadow-inner">
-                                <img
-                                  src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${booking.qrCode || "LUXE-VOID"}`}
-                                  alt="Booking QR"
-                                  className="w-full h-full object-contain"
-                                />
-                              </div>
-                              <div className="space-y-1 flex-1">
-                                <p className="text-lg font-black text-foreground leading-tight">
-                                  {booking.carName}
-                                </p>
-                                <p className="text-[10px] font-bold text-primary uppercase tracking-widest">
-                                  {booking.status}
-                                </p>
-                                <div className="mt-2 text-[11px] font-mono bg-primary/10 text-primary px-2 py-1 rounded inline-block">
-                                  <CountdownTimer expireAt={booking.expireAt as string} />
-                                </div>
-                              </div>
-                              <div className="flex flex-col justify-between items-end">
-                                <CheckCircle2 className="w-6 h-6 text-primary opacity-20 group-hover:opacity-100 transition-opacity" />
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => router.push(`/cancel/${booking.id}`)}
-                                  className="h-8 text-[11px] font-bold text-destructive hover:bg-destructive/10"
-                                >
-                                  CANCEL
-                                </Button>
-                              </div>
-                            </div>
-                          </Card>
-                        ))}
-                    </div>
-                  </div>
-                )}
-
                 <PersonalInfo user={user} isSaving={isSaving} onSave={handleSaveProfile} />
               </div>
             )}

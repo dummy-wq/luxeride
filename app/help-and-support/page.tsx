@@ -4,6 +4,7 @@ import { Navigation } from "@/components/navigation";
 import { Contact } from "@/components/contact";
 import { Card } from "@/components/ui/card";
 import { Shield, CreditCard, FileText, AlertTriangle, Car } from "lucide-react";
+import { siteConfig } from "@/lib/config";
 
 export default function HelpAndSupportPage() {
   return (
@@ -14,10 +15,10 @@ export default function HelpAndSupportPage() {
         {/* Header Section */}
         <div className="text-center space-y-4">
           <h1 className="text-4xl md:text-5xl font-bold text-foreground">
-            Help & Support
+            {siteConfig.helpAndSupport.heading}
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Everything you need to know about renting with LuxeRide.
+            {siteConfig.helpAndSupport.subheading}
           </p>
         </div>
 
@@ -25,10 +26,10 @@ export default function HelpAndSupportPage() {
         <div className="space-y-10">
           <div className="text-center">
             <h2 className="text-3xl font-bold text-foreground">
-              Policies & Information
+              {siteConfig.helpAndSupport.policiesHeading}
             </h2>
             <p className="text-muted-foreground mt-2">
-              Clear, transparent guidelines for a seamless luxury experience.
+              {siteConfig.helpAndSupport.policiesSubheading}
             </p>
           </div>
 

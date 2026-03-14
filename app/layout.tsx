@@ -4,6 +4,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { ThemeProvider } from "@/components/theme-provider";
 import { PageTransition } from "@/components/page-transition";
 import { Toaster } from "@/components/ui/toaster";
+import { siteConfig } from "@/lib/config";
 import "./globals.css";
 
 const montserrat = Montserrat({
@@ -22,14 +23,13 @@ const inter = Inter({
 export const viewport: Viewport = {
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#1c1b19" },
+    { media: "(prefers-color-scheme: dark)", color: "#141311" },
   ],
 };
 
 export const metadata: Metadata = {
-  title: "LuxeRide - Premium Car Rentals in India",
-  description:
-    "Experience luxury car rentals with premium vehicles across India",
+  title: `${siteConfig.brand.name} - ${siteConfig.brand.tagline}`,
+  description: siteConfig.brand.description,
   generator: "v0.app",
   icons: {
     icon: [

@@ -6,6 +6,7 @@ import { ChevronDown, ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 import Image from "next/image";
+import { siteConfig } from "@/lib/config";
 
 export function Hero() {
   const [isVisible, setIsVisible] = useState(false);
@@ -40,26 +41,25 @@ export function Hero() {
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-card rounded-full border border-border shadow-sm">
               <span className="inline-flex rounded-full h-2 w-2 bg-primary"></span>
               <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/80">
-                Premium Fleet Available
+                {siteConfig.hero.badge}
               </span>
             </div>
 
             <h1 className="text-5xl md:text-7xl font-black tracking-tighter leading-[0.95] text-foreground">
-              DRIVE <br />
+              {siteConfig.hero.headingLine1} <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/60">
-                THE ICON
+                {siteConfig.hero.headingLine2}
               </span>
             </h1>
 
             <p className="text-lg text-muted-foreground/90 max-w-md leading-relaxed font-medium">
-              Curating the world&apos;s most exclusive automotive experiences.
-              Luxury is no longer a choice, it&apos;s a standard.
+              {siteConfig.hero.subheading}
             </p>
 
             <div className="flex flex-wrap gap-4 pt-4">
               <Link href="/cars">
                 <Button className="rounded-none px-8 py-7 bg-foreground text-background hover:bg-foreground/90 text-sm font-bold tracking-widest uppercase transition-all hover:gap-4 group">
-                  Explore Now <ArrowRight className="w-4 h-4 transition-all group-hover:translate-x-1" />
+                  {siteConfig.hero.ctaLabel} <ArrowRight className="w-4 h-4 transition-all group-hover:translate-x-1" />
                 </Button>
               </Link>
             </div>
@@ -67,18 +67,12 @@ export function Hero() {
 
           {/* Quick Stats Mini-Grid */}
           <div className={`grid grid-cols-3 gap-8 pt-12 border-t border-border/20 transition-all duration-200 ease-out ${isVisible ? "opacity-100" : "opacity-0"}`}>
-            <div>
-              <div className="text-2xl font-black text-foreground">500+</div>
-              <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Fleet</div>
-            </div>
-            <div>
-              <div className="text-2xl font-black text-foreground">24/7</div>
-              <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Concierge</div>
-            </div>
-            <div>
-              <div className="text-2xl font-black text-foreground">0%</div>
-              <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Compromise</div>
-            </div>
+            {siteConfig.hero.stats.map((stat) => (
+              <div key={stat.label}>
+                <div className="text-2xl font-black text-foreground">{stat.value}</div>
+                <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{stat.label}</div>
+              </div>
+            ))}
           </div>
         </div>
 
@@ -92,8 +86,8 @@ export function Hero() {
               {mounted && (
                 <>
                   <Image
-                    src="/hero-dark-premium.jpg"
-                    alt="LuxeRide Featured Fleet Dark"
+                    src={siteConfig.hero.darkImage}
+                    alt={`${siteConfig.brand.name} Featured Fleet Dark`}
                     fill
                     className={`object-cover transition-opacity duration-150 ${currentTheme === 'dark' ? 'opacity-100' : 'opacity-0'}`}
                     style={{ objectPosition: 'center' }}
@@ -101,8 +95,8 @@ export function Hero() {
                     priority
                   />
                   <Image
-                    src="/hero-light-premium.png"
-                    alt="LuxeRide Featured Fleet Light"
+                    src={siteConfig.hero.lightImage}
+                    alt={`${siteConfig.brand.name} Featured Fleet Light`}
                     fill
                     className={`object-cover transition-opacity duration-150 ${currentTheme === 'light' ? 'opacity-100' : 'opacity-0'}`}
                     style={{ objectPosition: 'center' }}
