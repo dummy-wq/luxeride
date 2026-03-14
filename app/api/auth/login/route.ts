@@ -18,12 +18,13 @@ export async function POST(request: NextRequest) {
     }
     
     const { email, password } = validation.data;
+    const trimmedEmail = email.trim();
 
     // Admin check - Fallback to "admin"/"pass" only in development
     const adminEmail = env.ADMIN_EMAIL || (env.isDev ? "admin" : undefined);
     const adminPassword = env.ADMIN_PASSWORD || (env.isDev ? "pass" : undefined);
 
-    if (adminEmail && adminPassword && email?.toLowerCase() === adminEmail.toLowerCase() && password === adminPassword) {
+    if (adminEmail && adminPassword && trimmedEmail?.toLowerCase() === adminEmail.toLowerCase() && password === adminPassword) {
       const token = jwt.sign(
         { userId: "admin", email: "admin", role: "admin" },
         env.JWT_SECRET,
@@ -47,7 +48,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Find user
-    const user = await UserModel.findByEmail(email);
+    const user = await UserModel.findByEmail(trimmedEmail);
     if (!user) {
       return NextResponse.json(
         { error: "Invalid email or password" },

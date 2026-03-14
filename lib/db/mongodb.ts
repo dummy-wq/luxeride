@@ -4,7 +4,10 @@ import { env } from '../env'
 
 const uri = env.MONGODB_URI
 
-const options = {}
+const options = {
+  connectTimeoutMS: 5000,
+  serverSelectionTimeoutMS: 5000,
+}
 
 let client: MongoClient
 let clientPromise: Promise<MongoClient>

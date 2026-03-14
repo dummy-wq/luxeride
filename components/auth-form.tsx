@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Mail, Lock, User, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
@@ -16,6 +16,12 @@ interface AuthFormProps {
 
 export function AuthForm({ type, onSubmit }: AuthFormProps) {
   const router = useRouter();
+  const [redirectPath, setRedirectPath] = useState<string | null>(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setRedirectPath(params.get("redirect"));
+  }, []);
   const { login: authLogin } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -30,7 +36,8 @@ export function AuthForm({ type, onSubmit }: AuthFormProps) {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const finalValue = name === "email" ? value.trim() : value;
+    setFormData((prev) => ({ ...prev, [name]: finalValue }));
     setError(null);
   };
 
@@ -87,6 +94,8 @@ export function AuthForm({ type, onSubmit }: AuthFormProps) {
         const user = data?.user || (data?.token ? data : null);
         if (user?.email === "admin" || user?.role === "admin") {
           router.push("/admin");
+        } else if (redirectPath) {
+          router.push(redirectPath);
         } else {
           router.push(type === "login" ? "/" : "/onboarding");
         }
@@ -260,7 +269,7 @@ export function AuthForm({ type, onSubmit }: AuthFormProps) {
           <>
             Already have an account?{" "}
             <Link
-              href="/login"
+              href={redirectPath ? `/login?redirect=${redirectPath}` : "/login"}
               className="text-primary hover:text-primary/80 font-semibold transition-colors"
             >
               Sign In
@@ -270,7 +279,7 @@ export function AuthForm({ type, onSubmit }: AuthFormProps) {
           <>
             Don't have an account?{" "}
             <Link
-              href="/signup"
+              href={redirectPath ? `/signup?redirect=${redirectPath}` : "/signup"}
               className="text-primary hover:text-primary/80 font-semibold transition-colors"
             >
               Sign Up

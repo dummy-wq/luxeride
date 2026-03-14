@@ -19,18 +19,19 @@ export async function POST(request: NextRequest) {
     }
     
     const { fullName, email, password } = validation.data;
+    const trimmedEmail = email.trim();
 
     // Create user
     const userId = await UserModel.create({
       fullName,
-      email,
+      email: trimmedEmail,
       passwordHash: password,
       isActive: true,
     });
 
     // Generate JWT token
     const token = jwt.sign(
-      { userId: userId.toString(), email },
+      { userId: userId.toString(), email: trimmedEmail },
       env.JWT_SECRET,
       { expiresIn: "7d" },
     );
@@ -43,7 +44,7 @@ export async function POST(request: NextRequest) {
         user: {
           id: userId.toString(),
           fullName,
-          email,
+          email: trimmedEmail,
           isActive: true
         }
       },
