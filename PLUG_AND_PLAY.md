@@ -61,7 +61,20 @@ All "plugs" are managed via **Environment Variables**. Copy `.env.example` to `.
 
 Once the server is "plugged in," you will want to change the brand.
 - **Visuals**: See [WHITE_LABELING.md](WHITE_LABELING.md) for a step-by-step on changing logos, colors, and names.
+- **Theme Wizard**: Use our interactive tool to change your site colors (see below).
 - **Fleet**: Edit `lib/data/cars.ts` to add your specific vehicle inventory.
+
+---
+
+## 4.1 Interactive Theme Customization
+
+We provide a specialized "Theme Wizard" to help you change the look of the site instantly.
+
+1. **Pick your colors**: Open `THEME_DESIGNER.html` in any web browser. Use the visual color wheels to design your brand and preview the results.
+2. **Launch the Wizard**: Run the script corresponding to your operating system:
+   - **Windows**: `./scripts/theme-wizard.ps1`
+   - **Mac/Linux**: `./scripts/theme-wizard.sh`
+3. **Apply**: Paste the Hex codes from the designer into the terminal. The script will automatically update `app/globals.css` for you.
 
 ---
 

@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theme & Font Designer | LuxeRide</title>
+    <!-- Google Fonts for Preview -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;900&family=Playfair+Display:wght@700;900&family=Bebas+Neue&family=Outfit:wght@700&family=Poppins:wght@400;600&family=Open+Sans:wght@400;600&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-gruv: #f9f5d7;
+            --primary-gruv: #af3a03;
+            --accent-gruv: #427b58;
+            --bg-page: #ffffff;
+            --card-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+        }
+        
+        * { box-sizing: border-box; transition: all 0.2s ease-out; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fcfcfc;
+            color: #1a202c;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            background: white;
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid #edf2f7;
+        }
+
+        header { text-align: center; margin-bottom: 40px; }
+        h1 { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 2.5em; margin: 0; color: #1a202c; letter-spacing: -1px; }
+        p.subtitle { color: #718096; font-size: 1.1em; margin-top: 8px; }
+
+        .section-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #a0aec0;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .section-title::after { content: ""; flex: 1; height: 1px; background: #edf2f7; }
+
+        .grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 40px; }
+        
+        @media (max-width: 850px) {
+            .grid { grid-template-columns: 1fr; }
+        }
+
+        .controls { display: flex; flex-direction: column; gap: 32px; }
+
+        .control-block { background: #f8fafc; padding: 24px; border-radius: 16px; border: 1px solid #f1f5f9; }
+        h3 { font-size: 1em; margin: 0 0 20px 0; color: #4a5568; }
+
+        .color-row { display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; }
+        label { font-size: 0.85em; font-weight: 600; color: #718096; }
+        
+        .color-input-wrapper { display: flex; align-items: center; gap: 12px; }
+        input[type="color"] {
+            -webkit-appearance: none;
+            width: 44px;
+            height: 44px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            padding: 0;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+        input[type="color"]::-webkit-color-swatch { border: none; border-radius: 50%; }
+
+        select {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            font-size: 0.95em;
+            cursor: pointer;
+            outline: none;
+        }
+        select:focus { border-color: #3182ce; }
+
+        .previews-stack { display: flex; flex-direction: column; gap: 24px; }
+        
+        .preview-card {
+            padding: 32px;
+            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .preview-label {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            font-size: 0.7em;
+            font-weight: 800;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            background: rgba(0,0,0,0.05);
+            border-radius: 4px;
+        }
+
+        .preview-heading { margin: 0 0 16px 0; font-size: 1.8em; line-height: 1.1; }
+        .preview-body { font-size: 0.95em; line-height: 1.6; margin-bottom: 24px; }
+        
+        .preview-btn {
+            display: inline-block;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 700;
+            text-decoration: none;
+            font-size: 0.9em;
+            border: none;
+            cursor: pointer;
+        }
+
+        .accent-dot { display: flex; align-items: center; gap: 8px; font-size: 0.85em; margin-top: 16px; font-weight: 500; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; }
+
+        .terminal-output {
+            margin-top: 40px;
+            background: #1a202c;
+            color: #a0aec0;
+            padding: 24px;
+            border-radius: 16px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .terminal-header { color: #4fd1c5; margin-bottom: 12px; font-weight: bold; font-size: 0.9em; }
+        code { color: #e2e8f0; display: block; line-height: 1.6; font-size: 0.9em; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Brand Designer</h1>
+            <p class="subtitle">Customize the visual identity of your platform.</p>
+        </header>
+
+        <div class="grid">
+            <!-- LEFT: CONTROLS -->
+            <div class="controls">
+                
+                <section>
+                    <div class="section-title">Colors</div>
+                    <div class="control-block">
+                        <h3>Light Mode</h3>
+                        <div class="color-row">
+                            <label>Primary Brand</label>
+                            <div class="color-input-wrapper">
+                                <input type="color" id="lp" value="#af3a03">
+                                <span id="lp-val">#af3a03</span>
+                            </div>
+                        </div>
+                        <div class="color-row">
+                            <label>Background</label>
+                            <div class="color-input-wrapper">
+                                <input type="color" id="lb" value="#f9f5d7">
+                                <span id="lb-val">#f9f5d7</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="control-block" style="margin-top: 16px;">
+                        <h3>Dark Mode</h3>
+                        <div class="color-row">
+                            <label>Primary Brand</label>
+                            <div class="color-input-wrapper">
+                                <input type="color" id="dp" value="#a6a922">
+                                <span id="dp-val">#a6a922</span>
+                            </div>
+                        </div>
+                        <div class="color-row">
+                            <label>Background</label>
+                            <div class="color-input-wrapper">
+                                <input type="color" id="db" value="#141311">
+                                <span id="db-val">#141311</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <div class="section-title">Typography</div>
+                    <div class="control-block">
+                        <div class="color-row">
+                            <label>Heading Font</label>
+                            <select id="f-h">
+                                <option value="'Montserrat', sans-serif">Montserrat (Default)</option>
+                                <option value="'Playfair Display', serif">Playfair Display (Premium)</option>
+                                <option value="'Bebas Neue', sans-serif">Bebas Neue (Bold/Sporty)</option>
+                                <option value="'Outfit', sans-serif">Outfit (Modern)</option>
+                                <option value="'Inter', sans-serif">Inter (Clean)</option>
+                            </select>
+                        </div>
+                        <div class="color-row">
+                            <label>Body/Script Font</label>
+                            <select id="f-b">
+                                <option value="'Inter', sans-serif">Inter (Default)</option>
+                                <option value="'Open Sans', sans-serif">Open Sans</option>
+                                <option value="'Roboto', sans-serif">Roboto</option>
+                                <option value="'Lato', sans-serif">Lato</option>
+                                <option value="'Poppins', sans-serif">Poppins</option>
+                            </select>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- RIGHT: PREVIEW -->
+            <div class="previews-stack">
+                <div class="section-title">Live Preview</div>
+
+                <!-- Light Preview -->
+                <div class="preview-card" id="card-l">
+                    <span class="preview-label">Theme Light</span>
+                    <h2 class="preview-heading">Drive Excellence.</h2>
+                    <p class="preview-body">Experience the pinnacle of luxury rental services. Your journey deserves a fleet that commands respect on every road.</p>
+                    <button class="preview-btn" id="btn-l">Explore Your Fleet</button>
+                    <div class="accent-dot"><div class="dot" id="dot-l"></div> Verified Premium Vehicle</div>
+                </div>
+
+                <!-- Dark Preview -->
+                <div class="preview-card" id="card-d">
+                    <span class="preview-label" style="background: rgba(255,255,255,0.1);">Theme Dark</span>
+                    <h2 class="preview-heading">Night Edition.</h2>
+                    <p class="preview-body">The sleekest rides available for the sophisticated traveler. Redefining what it means to travel in style.</p>
+                    <button class="preview-btn" id="btn-d">Book Your Session</button>
+                    <div class="accent-dot"><div class="dot" id="dot-d"></div> GPS Tracking & Security Included</div>
+                </div>
+
+                <div class="terminal-output">
+                    <div class="terminal-header">RUN IN TERMINAL:</div>
+                    <code id="cli-code">./scripts/theme-wizard.sh</code>
+                    <div class="terminal-header" style="margin-top: 20px; color: #718096;">WIZARD INPUT VALUES:</div>
+                    <code id="vals-code">Loading...</code>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const ids = ['lp', 'lb', 'dp', 'db', 'f-h', 'f-b'];
+        
+        function update() {
+            const vals = {
+                lp: document.getElementById('lp').value,
+                lb: document.getElementById('lb').value,
+                dp: document.getElementById('dp').value,
+                db: document.getElementById('db').value,
+                fh: document.getElementById('f-h').value,
+                fb: document.getElementById('f-b').value
+            };
+
+            // Update Labels
+            document.getElementById('lp-val').textContent = vals.lp;
+            document.getElementById('lb-val').textContent = vals.lb;
+            document.getElementById('dp-val').textContent = vals.dp;
+            document.getElementById('db-val').textContent = vals.db;
+
+            // Apply Light Preview
+            const cardL = document.getElementById('card-l');
+            cardL.style.backgroundColor = vals.lb;
+            cardL.style.color = '#1a202c';
+            cardL.style.fontFamily = vals.fb;
+            cardL.querySelector('h2').style.fontFamily = vals.fh;
+            cardL.querySelector('h2').style.color = '#1a202c';
+            cardL.querySelector('.preview-btn').style.backgroundColor = vals.lp;
+            cardL.querySelector('.preview-btn').style.color = '#ffffff';
+            cardL.querySelector('.dot').style.backgroundColor = vals.lp;
+
+            // Apply Dark Preview (Simple logic for text color contrast)
+            const cardD = document.getElementById('card-d');
+            cardD.style.backgroundColor = vals.db;
+            cardD.style.color = '#f7fafc';
+            cardD.style.fontFamily = vals.fb;
+            cardD.querySelector('h2').style.fontFamily = vals.fh;
+            cardD.querySelector('h2').style.color = '#f7fafc';
+            cardD.querySelector('.preview-btn').style.backgroundColor = vals.dp;
+            cardD.querySelector('.preview-btn').style.color = vals.db; // Often bg color is good for text on dark mode primary
+            cardD.querySelector('.dot').style.backgroundColor = vals.dp;
+
+            // Update CLI Code Snippet
+            document.getElementById('vals-code').innerHTML = 
+`1.  Light Primary:  ${vals.lp}
+2.  Light Bg:       ${vals.lb}
+3.  Dark Primary:   ${vals.dp}
+4.  Dark Bg:        ${vals.db}
+5.  Heading Font:   ${vals.fh}
+6.  Body Font:      ${vals.fb}`;
+        }
+
+        ids.forEach(id => document.getElementById(id).addEventListener('input', update));
+        update();
+    </script>
+</body>
+</html>
