@@ -25,12 +25,44 @@ export function CarsShowcase() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCarId, setSelectedCarId] = useState<string | null>(null);
+  const [carsList, setCarsList] = useState<any[]>([]);
+
+  // Fetch cars from API
+  useEffect(() => {
+    const fetchCars = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch("/api/cars");
+        if (!response.ok) throw new Error("Failed to fetch cars");
+        const data = await response.json();
+        setCarsList(data.cars || []);
+      } catch (error) {
+        console.error("Failed to load cars:", error);
+        // Fallback to static data if API fails (useful for dev)
+        setCarsList(cars);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchCars();
+  }, []);
 
   // Price range
-  const allPrices = useMemo(() => cars.map((c) => c.pricePerHour), []);
-  const minPrice = Math.min(...allPrices);
-  const maxPrice = Math.max(...allPrices);
-  const [priceRange, setPriceRange] = useState<[number, number]>([minPrice, maxPrice]);
+  const allPrices = useMemo(() => {
+    const source = carsList.length > 0 ? carsList : cars;
+    return source.map((c) => c.pricePerHour);
+  }, [carsList]);
+
+  const minPrice = useMemo(() => (allPrices.length > 0 ? Math.min(...allPrices) : 0), [allPrices]);
+  const maxPrice = useMemo(() => (allPrices.length > 0 ? Math.max(...allPrices) : 10000), [allPrices]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 10000]);
+
+  // Update price range when data loads
+  useEffect(() => {
+    if (allPrices.length > 0) {
+      setPriceRange([minPrice, maxPrice]);
+    }
+  }, [allPrices, minPrice, maxPrice]);
 
   // Read user's city on mount and compute a numeric hash for seeding
   useEffect(() => {
@@ -95,23 +127,35 @@ export function CarsShowcase() {
   // 12-hour time cycle for periodic rotation
   const getCycle = () => Math.floor(Date.now() / (12 * 60 * 60 * 1000));
 
-  const isShadedOut = (carId: number) => {
-    const cycle = getCycle();
-    return (carId * 13 + cycle * 7 + cityHash) % 7 === 0;
+  const getHash = (id: string | number) => {
+    if (typeof id === "number") return id;
+    let hash = 0;
+    const s = String(id);
+    for (let i = 0; i < s.length; i++) {
+      hash = ((hash << 5) - hash + s.charCodeAt(i)) | 0;
+    }
+    return Math.abs(hash);
   };
 
-  const getAvailability = (carId: number) => {
+  const isShadedOut = (carId: string | number) => {
     const cycle = getCycle();
+    const hash = getHash(carId);
+    return (hash * 13 + cycle * 7 + cityHash) % 7 === 0;
+  };
+
+  const getAvailability = (carId: string | number) => {
+    const cycle = getCycle();
+    const hash = getHash(carId);
     const states = ["Available", "Available", "Booked", "Maintenance"];
-    return states[(carId * 3 + cycle + cityHash) % states.length];
+    return states[(hash * 3 + cycle + cityHash) % states.length];
   };
 
-  const toggleFavorite = (e: React.MouseEvent, carId: number) => {
+  const toggleFavorite = (e: React.MouseEvent, carId: string | number) => {
     e.preventDefault();
     e.stopPropagation();
-    setFavorites((prev) =>
+    setFavorites((prev: any) =>
       prev.includes(carId)
-        ? prev.filter((id) => id !== carId)
+        ? prev.filter((id: any) => id !== carId)
         : [...prev, carId],
     );
   };
@@ -119,7 +163,8 @@ export function CarsShowcase() {
   const { carsPage } = siteConfig;
 
   const filteredCars = useMemo(() => {
-    return cars.filter((car) => {
+    const source = carsList.length > 0 ? carsList : cars;
+    return source.filter((car) => {
       const matchesCategory =
         selectedCategory === "all" || car.category === selectedCategory;
       const matchesSearch =
@@ -129,12 +174,15 @@ export function CarsShowcase() {
         car.pricePerHour >= priceRange[0] && car.pricePerHour <= priceRange[1];
       return matchesCategory && matchesSearch && matchesPrice;
     });
-  }, [selectedCategory, searchQuery, priceRange]);
+  }, [selectedCategory, searchQuery, priceRange, carsList]); // Added carsList to dependencies
 
-  // Get detailed car from carsDatabase (for the inline detail panel)
-  const selectedCar = selectedCarId
-    ? carsDatabase[selectedCarId as keyof typeof carsDatabase]
-    : null;
+  // Get detailed car (for the inline detail panel)
+  const selectedCar = useMemo(() => {
+    if (!selectedCarId) return null;
+    const foundInList = carsList.find(c => String(c._id || c.id) === selectedCarId);
+    if (foundInList) return foundInList;
+    return carsDatabase[selectedCarId as keyof typeof carsDatabase];
+  }, [selectedCarId, carsList]);
 
   // Handle URL syncing for incremental navigation
   const openCarDetail = (carId: string | null) => {
@@ -462,17 +510,15 @@ export function CarsShowcase() {
                   ))
                 : filteredCars.length > 0
                   ? filteredCars.map((car) => {
-                      const availability = getAvailability(car.id);
+                      const carId = String(car._id || car.id);
+                      const availability = getAvailability(carId);
                       const shaded =
-                        isShadedOut(car.id) || availability !== "Available";
-                      const hasDetail =
-                        carsDatabase[
-                          String(car.id) as keyof typeof carsDatabase
-                        ];
+                        isShadedOut(carId) || availability !== "Available";
+                      const hasDetail = true;
 
                       return (
                         <motion.div
-                          key={car.id}
+                          key={carId}
                           layout
                           variants={cardVariants}
                           initial="hidden"

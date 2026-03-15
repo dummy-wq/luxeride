@@ -36,7 +36,7 @@ export function Navigation() {
     const resetIdleTimer = () => {
       clearTimeout(timeoutId);
       if (isVisible) {
-        timeoutId = setTimeout(hideNav, 4000);
+        timeoutId = setTimeout(hideNav, 10000);
       }
     };
 
@@ -56,8 +56,8 @@ export function Navigation() {
       resetIdleTimer();
     };
 
-    // Initial timer
-    timeoutId = setTimeout(hideNav, 4000);
+    // Initial timer - increased to 10 seconds for better UX
+    timeoutId = setTimeout(hideNav, 10000);
 
     window.addEventListener("mousemove", handleMouseMove);
     window.addEventListener("scroll", handleScroll);
@@ -146,26 +146,28 @@ export function Navigation() {
             </Button>
             {user ? (
               <>
-                <Link href="/bookings">
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="text-foreground"
-                    title="My Bookings"
-                  >
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="text-foreground"
+                  title="My Bookings"
+                  asChild
+                >
+                  <Link href="/bookings">
                     <CalendarDays className="w-5 h-5" />
-                  </Button>
-                </Link>
-                <Link href="/profile">
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="text-foreground"
-                    title="Profile"
-                  >
+                  </Link>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="text-foreground"
+                  title="Profile"
+                  asChild
+                >
+                  <Link href="/profile">
                     <User className="w-5 h-5" />
-                  </Button>
-                </Link>
+                  </Link>
+                </Button>
                 {pathname !== "/profile" && (
                   <Button
                     variant="ghost"
@@ -178,14 +180,12 @@ export function Navigation() {
               </>
             ) : (
               <>
-                <Link href="/login">
-                  <Button variant="outline">Login</Button>
-                </Link>
-                <Link href="/signup">
-                  <Button className="bg-primary hover:bg-primary/90">
-                    Sign Up
-                  </Button>
-                </Link>
+                <Button variant="outline" asChild>
+                  <Link href="/login">Login</Link>
+                </Button>
+                <Button className="bg-primary hover:bg-primary/90" asChild>
+                  <Link href="/signup">Sign Up</Link>
+                </Button>
               </>
             )}
           </div>
@@ -244,30 +244,24 @@ export function Navigation() {
             <div className="pt-2 space-y-2">
               {user ? (
                 <>
-                  <Link
-                    href="/bookings"
-                    onClick={() => setIsOpen(false)}
-                    className="block"
+                  <Button
+                    variant="outline"
+                    className="w-full flex items-center justify-center gap-2"
+                    asChild
                   >
-                    <Button
-                      variant="outline"
-                      className="w-full flex items-center justify-center gap-2"
-                    >
+                    <Link href="/bookings" onClick={() => setIsOpen(false)}>
                       <CalendarDays className="w-4 h-4" /> Bookings
-                    </Button>
-                  </Link>
-                  <Link
-                    href="/profile"
-                    onClick={() => setIsOpen(false)}
-                    className="block"
+                    </Link>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full flex items-center justify-center gap-2"
+                    asChild
                   >
-                    <Button
-                      variant="outline"
-                      className="w-full flex items-center justify-center gap-2"
-                    >
+                    <Link href="/profile" onClick={() => setIsOpen(false)}>
                       <User className="w-4 h-4" /> Profile
-                    </Button>
-                  </Link>
+                    </Link>
+                  </Button>
                   <Button
                     onClick={handleLogout}
                     variant="ghost"
@@ -278,24 +272,16 @@ export function Navigation() {
                 </>
               ) : (
                 <>
-                  <Link
-                    href="/login"
-                    onClick={() => setIsOpen(false)}
-                    className="block"
-                  >
-                    <Button variant="outline" className="w-full">
+                  <Button variant="outline" className="w-full" asChild>
+                    <Link href="/login" onClick={() => setIsOpen(false)}>
                       Login
-                    </Button>
-                  </Link>
-                  <Link
-                    href="/signup"
-                    onClick={() => setIsOpen(false)}
-                    className="block"
-                  >
-                    <Button className="w-full bg-primary hover:bg-primary/90">
+                    </Link>
+                  </Button>
+                  <Button className="w-full bg-primary hover:bg-primary/90" asChild>
+                    <Link href="/signup" onClick={() => setIsOpen(false)}>
                       Sign Up
-                    </Button>
-                  </Link>
+                    </Link>
+                  </Button>
                 </>
               )}
             </div>
