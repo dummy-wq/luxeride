@@ -89,24 +89,24 @@ export function Navigation() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-0 font-bold text-xl group relative ml-4">
-            <div className="relative w-[21px] h-9 overflow-hidden group-hover:scale-110 transition-transform duration-300 -mt-2">
+          <Link href="/" className="flex items-center gap-0 font-black text-4xl group relative ml-[14px]">
+            <div className="relative w-[38px] h-[60px] overflow-hidden group-hover:scale-110 transition-transform duration-300">
               <Image
                 src={siteConfig.brand.logoDark}
                 alt={`${siteConfig.brand.name} Logo`}
                 fill
-                className="object-contain object-left hidden dark:block"
+                className="object-contain object-left hidden dark:block scale-[1.8] origin-left -translate-x-[10px]"
                 priority
               />
               <Image
                 src={siteConfig.brand.logoLight}
                 alt={`${siteConfig.brand.name} Logo`}
                 fill
-                className="object-contain object-left block dark:hidden"
+                className="object-contain object-left block dark:hidden scale-[1.8] origin-left -translate-x-[10px]"
                 priority
               />
             </div>
-            <span className="text-foreground leading-none">{`${siteConfig.brand.name}`.slice(1)}</span>
+            <span className="text-foreground flex items-center font-heading tracking-tight -ml-[1px]">{`${siteConfig.brand.name}`.slice(1)}</span>
           </Link>
 
           {/* Desktop Menu */}
