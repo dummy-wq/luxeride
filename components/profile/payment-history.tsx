@@ -4,6 +4,7 @@ import { CreditCard, Download } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Payment } from "@/lib/types";
 import { siteConfig } from "@/lib/config";
+import { formatPrice } from "@/lib/utils";
 
 interface PaymentHistoryProps {
   payments: Payment[];
@@ -19,17 +20,17 @@ export function PaymentHistory({ payments }: PaymentHistoryProps) {
              ${siteConfig.brand.name.toUpperCase()} RECEIPT
 ========================================
 Receipt ID:  ${payment.id || payment.transactionId || "N/A"}
-Date:        ${new Date(payment.createdAt).toLocaleString()}
+Date:        ${new Date(payment.createdAt).toLocaleDateString()}
 
 Vehicle:     ${payment.carName || "N/A"}
 Method:      ${payment.paymentMethod.toUpperCase()}
 Status:      ${payment.status.toUpperCase()}
 
 ----------------------------------------
-Subtotal:    ₹${base.toFixed(2)}
-Taxes (18%): ₹${tax.toFixed(2)}
+Subtotal:    ${siteConfig.ui.currencySymbol}${base.toFixed(2)}
+Taxes (18%): ${siteConfig.ui.currencySymbol}${tax.toFixed(2)}
 ========================================
-TOTAL PAID:  ₹${payment.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+TOTAL PAID:  ${siteConfig.ui.currencySymbol}${payment.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
 ========================================
 ${siteConfig.brand.email} | ${siteConfig.brand.phone}
 ========================================
@@ -39,7 +40,7 @@ ${siteConfig.brand.email} | ${siteConfig.brand.phone}
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `LuxeRide_Receipt_${payment.id || "payment"}.txt`;
+    a.download = `${siteConfig.brand.name}_Receipt_${payment.id || "payment"}.txt`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -84,7 +85,7 @@ ${siteConfig.brand.email} | ${siteConfig.brand.phone}
                     {payment.paymentMethod}
                   </td>
                   <td className="px-6 py-4 text-sm font-semibold text-primary">
-                    ₹{payment.amount.toLocaleString()}
+                    {formatPrice(payment.amount)}
                   </td>
                   <td className="px-6 py-4 text-sm">
                     <span

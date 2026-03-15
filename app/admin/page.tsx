@@ -1,9 +1,10 @@
 import { Navigation } from "@/components/navigation";
 import { AdminDashboard } from "@/components/admin-dashboard";
+import { siteConfig } from "@/lib/config";
 
 export const metadata = {
-    title: "Admin Dashboard | LuxeRide",
-    description: "Manage users and bookings for LuxeRide",
+    title: `Admin Dashboard | ${siteConfig.brand.name}`,
+    description: `Manage users and bookings for ${siteConfig.brand.name}`,
 };
 
 export default function AdminPage() {

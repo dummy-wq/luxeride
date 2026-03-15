@@ -1,7 +1,10 @@
 "use client";
 
+import { formatPrice } from "@/lib/utils";
+
 import { Navigation } from "@/components/navigation";
 import { Card } from "@/components/ui/card";
+import { siteConfig } from "@/lib/config";
 import {
   QrCode,
   CreditCard,
@@ -100,25 +103,25 @@ export default function ProcessPage() {
   const damages = [
     {
       title: "Minor Damage (Dents, Scratches)",
-      amount: "₹2,000 - ₹10,000",
+      amount: `${siteConfig.ui.currencySymbol}2,000 - ${siteConfig.ui.currencySymbol}10,000`,
       description:
         "Small dents, scratches, and minor cosmetic damage are assessed on a case-by-case basis.",
     },
     {
       title: "Window/Glass Damage",
-      amount: "₹5,000 - ₹25,000",
+      amount: `${siteConfig.ui.currencySymbol}5,000 - ${siteConfig.ui.currencySymbol}25,000`,
       description:
         "Broken windows, mirrors, or glass components will be charged at replacement cost.",
     },
     {
       title: "Tire Damage",
-      amount: "₹3,000 - ₹8,000",
+      amount: `${siteConfig.ui.currencySymbol}3,000 - ${siteConfig.ui.currencySymbol}8,000`,
       description:
         "Punctured or damaged tires will be charged based on damage severity and type.",
     },
     {
       title: "Major Body Damage",
-      amount: "₹15,000 - ₹1,00,000+",
+      amount: `${siteConfig.ui.currencySymbol}15,000 - ${siteConfig.ui.currencySymbol}1,00,000+`,
       description:
         "Significant structural damage, collision, or accident damage charged at repair cost.",
     },
@@ -139,7 +142,7 @@ export default function ProcessPage() {
           {/* Header */}
           <div className="text-center mb-16 space-y-4">
             <h1 className="text-4xl md:text-5xl font-bold text-foreground">
-              How LuxeRide Works
+              How {siteConfig.brand.name} Works
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Simple, transparent, and secure rental process with cutting-edge
@@ -201,7 +204,7 @@ export default function ProcessPage() {
               Advanced Vehicle Tracking
             </h2>
             <p className="text-lg text-muted-foreground mb-8 max-w-2xl">
-              Every LuxeRide vehicle is equipped with state-of-the-art tracking
+              Every {siteConfig.brand.name} vehicle is equipped with state-of-the-art tracking
               technology that monitors various aspects of your rental in
               real-time.
             </p>
@@ -295,7 +298,7 @@ export default function ProcessPage() {
                     All vehicles are provided in excellent condition with full
                     tank of fuel or full charge (for electric vehicles). Return
                     the vehicle in the same condition. Any additional refueling
-                    charges apply at ₹1.5x pump price if returned with less
+                    charges apply at {siteConfig.ui.currencySymbol}1.5x pump price if returned with less
                     fuel.
                   </p>
                 </div>
@@ -306,7 +309,7 @@ export default function ProcessPage() {
                   </h3>
                   <p>
                     Standard packages include 150 km per day. Additional
-                    kilometers are charged at ₹15 per km. Exceeding mileage
+                    kilometers are charged at {siteConfig.ui.currencySymbol}15 per km. Exceeding mileage
                     without payment may result in additional charges based on
                     vehicle tracking records.
                   </p>
@@ -343,7 +346,7 @@ export default function ProcessPage() {
                   </h3>
                   <p>
                     Vehicles must be returned by the agreed drop-off time. Late
-                    returns are charged at ₹500 per hour or the full daily rate
+                    returns are charged at {siteConfig.ui.currencySymbol}500 per hour or the full daily rate
                     (whichever is higher). After 3 hours of delay, the vehicle
                     is considered as a new rental day.
                   </p>

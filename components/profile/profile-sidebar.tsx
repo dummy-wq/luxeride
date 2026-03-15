@@ -3,6 +3,8 @@
 import { User as UserIcon, Wallet, LogOut } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { UserProfile, Payment } from "@/lib/types";
+import { siteConfig } from "@/lib/config";
+import { formatPrice } from "@/lib/utils";
 
 interface ProfileSidebarProps {
   user: UserProfile;
@@ -36,7 +38,7 @@ export function ProfileSidebar({ user, payments, activeTab, setActiveTab, onLogo
         </div>
         <div>
           <p className="text-sm text-muted-foreground">Total Spent</p>
-          <p className="text-2xl font-bold text-primary">₹{totalSpent.toLocaleString()}</p>
+          <p className="text-2xl font-bold text-primary">{formatPrice(totalSpent)}</p>
         </div>
         <div>
           <p className="text-sm text-muted-foreground">Member Since</p>
@@ -49,15 +51,15 @@ export function ProfileSidebar({ user, payments, activeTab, setActiveTab, onLogo
         </div>
       </div>
 
-      {/* LuxeCash Wallet */}
+      {/* {siteConfig.ui.walletName} Wallet */}
       <div className="pt-4 border-t border-border">
         <div className="p-4 bg-primary/10 rounded-xl border border-primary/20">
           <div className="flex items-center gap-2 mb-2">
             <Wallet className="w-5 h-5 text-primary" />
-            <h3 className="font-bold text-primary">LuxeCash Balance</h3>
+            <h3 className="font-bold text-primary">{siteConfig.ui.walletName} Balance</h3>
           </div>
           <p className="text-3xl font-black text-foreground">
-            ₹{(user.walletBalance || 0).toLocaleString()}
+            {formatPrice((user.walletBalance || 0))}
           </p>
           <p className="text-xs text-muted-foreground mt-1">Available for instant booking use</p>
         </div>

@@ -5,6 +5,8 @@ import { useRouter, useParams } from "next/navigation";
 import { Navigation } from "@/components/navigation";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { siteConfig } from "@/lib/config";
+import { formatPrice } from "@/lib/utils";
 import {
     CreditCard,
     Wallet,
@@ -170,7 +172,7 @@ export default function PaymentPage() {
                             <div className="flex justify-between text-sm">
                                 <span className="text-muted-foreground">Base Cost</span>
                                 <span className="text-foreground font-medium">
-                                    ₹{bookingDetails.baseCost?.toLocaleString()}
+                                    {formatPrice(bookingDetails.baseCost)}
                                 </span>
                             </div>
                             <div className="flex justify-between text-sm">
@@ -178,13 +180,13 @@ export default function PaymentPage() {
                                     Taxes & Fees (18%)
                                 </span>
                                 <span className="text-foreground font-medium">
-                                    ₹{bookingDetails.tax?.toLocaleString()}
+                                    {formatPrice(bookingDetails.tax)}
                                 </span>
                             </div>
                             <div className="flex justify-between pt-2 border-t border-border">
                                 <span className="font-bold text-foreground">Total</span>
                                 <span className="text-2xl font-bold text-primary">
-                                    ₹{bookingDetails.totalCost?.toLocaleString()}
+                                    {formatPrice(bookingDetails.totalCost)}
                                 </span>
                             </div>
                         </div>
@@ -227,7 +229,7 @@ export default function PaymentPage() {
                             onClick={handlePay}
                             className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6 font-bold text-lg transition-all active:scale-[0.98]"
                         >
-                            Pay ₹{bookingDetails.totalCost?.toLocaleString()}
+                            Pay {formatPrice(bookingDetails.totalCost)}
                         </Button>
                     )}
 
@@ -249,7 +251,7 @@ export default function PaymentPage() {
                                     Payment Successful!
                                 </p>
                                 <p className="text-sm text-muted-foreground mt-1">
-                                    ₹{bookingDetails.totalCost?.toLocaleString()} paid via{" "}
+                                    {formatPrice(bookingDetails.totalCost)} paid via{" "}
                                     {selectedMethod.toUpperCase()}
                                 </p>
                             </div>
@@ -278,7 +280,7 @@ export default function PaymentPage() {
                     {/* Security Footer */}
                     <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
                         <ShieldCheck className="w-3.5 h-3.5" />
-                        <span>Secured by LuxeRide • 256-bit encryption</span>
+                        <span>Secured by {siteConfig.brand.name} • 256-bit encryption</span>
                     </div>
                 </div>
             </div>

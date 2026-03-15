@@ -9,12 +9,19 @@ export const siteConfig = {
   // ── Brand ──────────────────────────────────────────────
   brand: {
     name: "LuxeRide",
-    logoLetter: "L",
+    logoLetter: "L", // Fallback letter
+    logoDark: "/logo-dark-v3.png",
+    logoLight: "/logo-light-v3.png",
     tagline: "Premium Car Rentals in India",
     description: "Experience luxury car rentals with premium vehicles across India",
     phone: "+91 800-LUXERIDE",
     email: "support@luxeride.in",
     foundedYear: 2020,
+  },
+  // ── UI Settings ────────────────────────────────────────
+  ui: {
+    currencySymbol: "₹",
+    walletName: "LuxeCash",
   },
 
   // ── Navigation ─────────────────────────────────────────
@@ -58,7 +65,7 @@ export const siteConfig = {
     noResultsTitle: "No vehicles found",
     noResultsSubtitle: "Try adjusting your filters or search keywords",
     stats: [
-      { value: "₹220 - ₹720", label: "Flexible Pricing for Every Budget" },
+      { value: "Flexible", label: "Pricing for Every Budget" },
       { value: "24/7", label: "Round the Clock Support" },
       { value: "50+", label: "Cities Across India" },
     ],

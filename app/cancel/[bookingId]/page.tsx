@@ -17,6 +17,8 @@ import {
 import { useAuth } from "@/lib/context/auth-context";
 
 import { Booking } from "@/lib/types";
+import { siteConfig } from "@/lib/config";
+import { formatPrice } from "@/lib/utils";
 
 export default function CancelBookingPage() {
     const { refreshUser } = useAuth();
@@ -166,7 +168,7 @@ export default function CancelBookingPage() {
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-muted-foreground">Amount Paid</span>
-                                <span className="font-bold text-primary">₹{booking.totalCost?.toLocaleString()}</span>
+                                <span className="font-bold text-primary">{formatPrice(booking.totalCost)}</span>
                             </div>
                         </div>
                         <div className="mt-4 p-3 bg-destructive/10 border border-destructive/20 rounded-lg flex gap-3 text-destructive text-sm items-start">
@@ -193,12 +195,12 @@ export default function CancelBookingPage() {
                                 onClick={() => setRefundChoice("wallet")}
                             >
                                 <Wallet className={`w-8 h-8 mb-4 ${refundChoice === "wallet" ? "text-primary" : "text-muted-foreground"}`} />
-                                <h4 className="font-bold text-foreground">LuxeCash Wallet</h4>
+                                <h4 className="font-bold text-foreground">{siteConfig.ui.walletName} Wallet</h4>
                                 <p className="text-sm text-green-500 font-semibold mt-1 flex items-center gap-1">
                                     <CheckCircle2 className="w-4 h-4" /> Instant Refund
                                 </p>
                                 <p className="text-xs text-muted-foreground mt-2">
-                                    Money is added to your secure LuxeRide wallet instantly and can be used for future bookings.
+                                    Money is added to your secure {siteConfig.brand.name} wallet instantly and can be used for future bookings.
                                 </p>
                             </Card>
 
@@ -246,8 +248,8 @@ export default function CancelBookingPage() {
                         <h3 className="text-2xl font-bold text-foreground">Booking Cancelled</h3>
                         <p className="text-muted-foreground">
                             {refundChoice === "wallet"
-                                ? `₹${booking?.totalCost?.toLocaleString()} has been added to your LuxeCash Wallet instantly.`
-                                : `₹${booking?.totalCost?.toLocaleString()} refund initiated to your original payment method. Please allow 3-5 days.`}
+                                ? `${formatPrice(booking?.totalCost)} has been added to your {siteConfig.ui.walletName} Wallet instantly.`
+                                : `${formatPrice(booking?.totalCost)} refund initiated to your original payment method. Please allow 3-5 days.`}
                         </p>
                         <p className="text-xs text-muted-foreground mt-4">Returning to profile...</p>
                     </Card>

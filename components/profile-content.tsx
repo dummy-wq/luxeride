@@ -14,6 +14,7 @@ import { PersonalInfo } from "./profile/personal-info";
 import { PaymentHistory } from "./profile/payment-history";
 
 import { Booking, Payment, UserProfile } from "@/lib/types";
+import { siteConfig } from "@/lib/config";
 
 export function ProfileContent() {
   const router = useRouter();
@@ -116,7 +117,7 @@ export function ProfileContent() {
           <XCircle className="w-16 h-16 text-destructive mx-auto mb-4 opacity-80" />
           <h2 className="text-2xl font-bold mb-2">Session Expired</h2>
           <p className="text-muted-foreground mb-6">
-            Your secure session has ended. Please log in again to access your LuxeRide dashboard.
+            Your secure session has ended. Please log in again to access your {siteConfig.brand.name} dashboard.
           </p>
           <Button 
             className="w-full bg-primary hover:bg-primary/90" 

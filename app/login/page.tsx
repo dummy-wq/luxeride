@@ -7,6 +7,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
 import { AuthResponse } from "@/lib/types";
+import { siteConfig } from "@/lib/config";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -35,7 +36,7 @@ export default function LoginPage() {
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-primary-foreground text-xs shadow-md group-hover:scale-105 transition-smooth">
               ⚡
             </div>
-            <span className="text-foreground tracking-tight">LuxeRide</span>
+            <span className="text-foreground tracking-tight">{siteConfig.brand.name}</span>
           </Link>
         </div>
 

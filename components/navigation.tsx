@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useTheme } from "next-themes";
 import { Moon, Sun, Menu, X, User, CalendarDays } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 import { useAuth } from "@/lib/context/auth-context";
 import { siteConfig } from "@/lib/config";
@@ -88,11 +89,24 @@ export function Navigation() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 font-bold text-xl">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-primary-foreground font-black">
-              {siteConfig.brand.logoLetter}
+          <Link href="/" className="flex items-center gap-0 font-bold text-xl group relative">
+            <div className="relative w-9 h-9 rounded-lg overflow-hidden group-hover:scale-110 transition-transform duration-300">
+              <Image
+                src={siteConfig.brand.logoDark}
+                alt={`${siteConfig.brand.name} Logo`}
+                fill
+                className="object-contain hidden dark:block"
+                priority
+              />
+              <Image
+                src={siteConfig.brand.logoLight}
+                alt={`${siteConfig.brand.name} Logo`}
+                fill
+                className="object-contain block dark:hidden"
+                priority
+              />
             </div>
-            <span className="text-foreground">{siteConfig.brand.name}</span>
+            <span className="text-foreground -ml-1.5">{`${siteConfig.brand.name}`.slice(1)}</span>
           </Link>
 
           {/* Desktop Menu */}

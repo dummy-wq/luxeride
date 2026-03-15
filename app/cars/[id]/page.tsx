@@ -1,5 +1,8 @@
 "use client";
 
+import { siteConfig } from "@/lib/config";
+import { formatPrice } from "@/lib/utils";
+
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { Navigation } from "@/components/navigation";
@@ -418,7 +421,7 @@ export default function CarDetailPage() {
                     <p className="text-sm text-muted-foreground">Price</p>
                     <div className="flex items-baseline gap-2">
                       <span className="text-4xl font-bold text-primary">
-                        ₹{car.price.toLocaleString()}
+                        {formatPrice(car.price)}
                       </span>
                       <span className="text-sm text-muted-foreground">/hr</span>
                     </div>
@@ -517,7 +520,7 @@ export default function CarDetailPage() {
                           : `${subscriptionDays} days`}
                       </span>
                       <span className="font-semibold text-foreground">
-                        ₹{defaultCost.toLocaleString()}
+                        {formatPrice(defaultCost)}
                       </span>
                     </div>
                     <div className="flex justify-between text-sm">
@@ -525,7 +528,7 @@ export default function CarDetailPage() {
                         Taxes & Fees (18%)
                       </span>
                       <span className="font-semibold text-foreground">
-                        ₹{tax.toLocaleString()}
+                        {formatPrice(tax)}
                       </span>
                     </div>
                   </div>
@@ -535,7 +538,7 @@ export default function CarDetailPage() {
                     <div className="flex justify-between items-center">
                       <span className="font-bold text-foreground">Total</span>
                       <span className="text-2xl font-bold text-primary">
-                        ₹{totalCost.toLocaleString()}
+                        {formatPrice(totalCost)}
                       </span>
                     </div>
 

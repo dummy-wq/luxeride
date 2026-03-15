@@ -21,6 +21,7 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
+import { siteConfig } from "@/lib/config";
 
 export function AdminDashboard() {
     const { toast } = useToast();
@@ -149,7 +150,7 @@ export function AdminDashboard() {
                             <span className="text-sm font-bold uppercase tracking-wider">Admin Portal</span>
                         </div>
                         <h1 className="text-4xl font-black text-foreground tracking-tight">User Management</h1>
-                        <p className="text-muted-foreground">Monitor and manage all LuxeRide members</p>
+                        <p className="text-muted-foreground">Monitor and manage all {siteConfig.brand.name} members</p>
                     </div>
 
                     <div className="flex items-center gap-4">
@@ -337,7 +338,7 @@ export function AdminDashboard() {
                     <p>Showing {filteredUsers.length} users</p>
                     <p className="flex items-center gap-2">
                         <ShieldCheck className="w-4 h-4 text-primary" />
-                        LuxeRide Secure Admin Workspace
+                        {siteConfig.brand.name} Secure Admin Workspace
                     </p>
                 </div>
             </div>

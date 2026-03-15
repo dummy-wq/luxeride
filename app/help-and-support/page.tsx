@@ -38,7 +38,7 @@ export default function HelpAndSupportPage() {
               <Shield className="w-10 h-10 text-primary" />
               <h3 className="text-xl font-bold">Insurance & Cover</h3>
               <p className="text-muted-foreground">
-                All LuxeRide vehicles come with comprehensive insurance
+                All {siteConfig.brand.name} vehicles come with comprehensive insurance
                 standard. This covers third-party damage, collision, and theft.
                 However, a deductible applies in case of an accident where you
                 are at fault.

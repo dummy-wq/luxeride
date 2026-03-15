@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/context/auth-context";
 import { siteConfig } from "@/lib/config";
+import { formatPrice } from "@/lib/utils";
 
 import { cars, carsDatabase } from "@/lib/data/cars";
 
@@ -219,7 +220,7 @@ export function CarsShowcase() {
                 />
               </div>
               <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">
-                ₹{priceRange[0]} — ₹{priceRange[1]}/hr
+                {formatPrice(priceRange[0])} — {formatPrice(priceRange[1])}/hr
               </span>
             </div>
           </div>
@@ -412,7 +413,7 @@ export function CarsShowcase() {
                         <p className="text-sm text-muted-foreground">Starting from</p>
                         <div className="flex items-baseline gap-2">
                           <span className="text-4xl font-bold text-primary">
-                            ₹{selectedCar.price.toLocaleString()}
+                            {formatPrice(selectedCar.price)}
                           </span>
                           <span className="text-sm text-muted-foreground">/hr</span>
                         </div>

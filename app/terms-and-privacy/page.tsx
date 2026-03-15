@@ -1,6 +1,7 @@
 import { Navigation } from "@/components/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { siteConfig } from "@/lib/config";
 
 export default function TermsAndPrivacyPage() {
   return (
@@ -23,7 +24,7 @@ export default function TermsAndPrivacyPage() {
           <section>
             <h2 className="text-2xl font-bold text-foreground mb-4">1. Terms of Service</h2>
             <p className="mb-4">
-              Welcome to LuxeRide. By accessing our website and using our services, you agree to comply with and be bound by the following terms and conditions.
+              Welcome to {siteConfig.brand.name}. By accessing our website and using our services, you agree to comply with and be bound by the following terms and conditions.
             </p>
             <ul className="list-disc pl-6 space-y-2">
               <li>Users must be at least 21 years old and possess a valid driving license to rent a vehicle.</li>
