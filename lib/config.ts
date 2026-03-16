@@ -9,9 +9,8 @@ export const siteConfig = {
   // ── Brand ──────────────────────────────────────────────
   brand: {
     name: "LuxeRide",
-    logoLetter: "L", // Fallback letter
-    logoDark: "/logo-dark-v3.png",
-    logoLight: "/logo-light-v3.png",
+    customLogo: null, // Set to a path (e.g., "/logo.png") to show an image to the left of the name
+    logoLetter: "L", // Fallback letter used if no customLogo is provided
     tagline: "Premium Car Rentals in India",
     description: "Experience luxury car rentals with premium vehicles across India",
     phone: "+91 800-LUXERIDE",

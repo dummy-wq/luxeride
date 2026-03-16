@@ -4,6 +4,7 @@ import { AuthForm } from "@/components/auth-form";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { siteConfig } from "@/lib/config";
+import Image from "next/image";
 
 export default function SignupPage() {
 
@@ -20,10 +21,18 @@ export default function SignupPage() {
             <span>Back</span>
           </Link>
 
-          <Link href="/" className="flex items-center gap-2 font-bold text-lg group transition-smooth">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-primary-foreground text-xs shadow-md group-hover:scale-105 transition-smooth">
-              ⚡
-            </div>
+          <Link href="/" className="flex items-center gap-2.5 font-extrabold text-xl group transition-smooth">
+            {siteConfig.brand.customLogo && (
+              <div className="relative w-6 h-6 group-hover:scale-105 transition-smooth">
+                <Image
+                  src={siteConfig.brand.customLogo}
+                  alt={`${siteConfig.brand.name} Logo`}
+                  fill
+                  className="object-contain"
+                  priority
+                />
+              </div>
+            )}
             <span className="text-foreground tracking-tight">{siteConfig.brand.name}</span>
           </Link>
         </div>
