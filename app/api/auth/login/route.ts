@@ -20,9 +20,9 @@ export async function POST(request: NextRequest) {
     const { email, password } = validation.data;
     const trimmedEmail = email.trim();
 
-    // Admin check - Fallback to "admin"/"pass" only in development
-    const adminEmail = env.ADMIN_EMAIL || (env.isDev ? "admin" : undefined);
-    const adminPassword = env.ADMIN_PASSWORD || (env.isDev ? "pass" : undefined);
+    // Admin check
+    const adminEmail = env.ADMIN_EMAIL;
+    const adminPassword = env.ADMIN_PASSWORD;
 
     if (adminEmail && adminPassword && trimmedEmail?.toLowerCase() === adminEmail.toLowerCase() && password === adminPassword) {
       const token = jwt.sign(

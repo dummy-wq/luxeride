@@ -25,11 +25,11 @@ export const env = {
   /** JWT signing secret (required) */
   JWT_SECRET: getRequiredEnv('JWT_SECRET', process.env.JWT_SECRET),
 
-  /** Admin email — if unset, falls back to "admin" in dev only */
-  ADMIN_EMAIL: process.env.ADMIN_EMAIL,
+  /** Admin email — defaults to "admin" */
+  ADMIN_EMAIL: process.env.ADMIN_EMAIL || 'admin',
 
-  /** Admin password — if unset, falls back to "pass" in dev only */
-  ADMIN_PASSWORD: process.env.ADMIN_PASSWORD,
+  /** Admin password — defaults to "pass" */
+  ADMIN_PASSWORD: process.env.ADMIN_PASSWORD || 'pass',
 
   /** Current environment */
   NODE_ENV: process.env.NODE_ENV || 'development',
