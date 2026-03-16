@@ -5,7 +5,7 @@ import { ObjectId } from "mongodb";
 
 export async function PATCH(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const user = verifyAuth(request);
@@ -13,7 +13,7 @@ export async function PATCH(
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        const id = params.id;
+        const { id } = await params;
         const carData = await request.json();
         const { db } = await connectToDatabase();
 
@@ -38,7 +38,7 @@ export async function PATCH(
 
 export async function DELETE(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const user = verifyAuth(request);
@@ -46,7 +46,7 @@ export async function DELETE(
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        const id = params.id;
+        const { id } = await params;
         const { db } = await connectToDatabase();
 
         await db.collection("cars").deleteOne({ _id: new ObjectId(id) });
