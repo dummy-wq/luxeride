@@ -1,23 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { AuthForm } from "@/components/auth-form";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-
-import { AuthResponse } from "@/lib/types";
 import { siteConfig } from "@/lib/config";
 
 export default function LoginPage() {
-  const router = useRouter();
-  const [error, setError] = useState("");
-
-  const handleSubmit = (data: AuthResponse) => {
-    // Correctly extract user from response data
-    const user = data.user || data;
-    localStorage.setItem("user", JSON.stringify(user));
-  };
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-background via-card to-background flex flex-col items-center justify-center p-4 sm:p-6 lg:p-12 overflow-hidden">
@@ -52,12 +40,7 @@ export default function LoginPage() {
 
         {/* Form Card */}
         <div className="w-full bg-card/60 backdrop-blur-sm border border-border rounded-2xl p-6 sm:p-8 shadow-lg">
-          {error && (
-            <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-600 text-sm">
-              {error}
-            </div>
-          )}
-          <AuthForm type="login" onSubmit={handleSubmit} />
+          <AuthForm type="login" />
         </div>
 
         {/* Additional Info */}

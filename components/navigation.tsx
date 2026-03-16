@@ -89,20 +89,20 @@ export function Navigation() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-0 font-black text-4xl group relative ml-[14px]">
-            <div className="relative w-[38px] h-[60px] overflow-hidden group-hover:scale-110 transition-transform duration-300">
+          <Link href="/" className="flex items-center gap-0 font-black text-[1.6rem] group relative ml-[10px]">
+            <div className="relative w-[26px] h-[42px] overflow-hidden group-hover:scale-110 transition-transform duration-300">
               <Image
                 src={siteConfig.brand.logoDark}
                 alt={`${siteConfig.brand.name} Logo`}
                 fill
-                className="object-contain object-left hidden dark:block scale-[1.8] origin-left -translate-x-[10px]"
+                className="object-contain object-left hidden dark:block scale-[1.8] origin-left -translate-x-[8px]"
                 priority
               />
               <Image
                 src={siteConfig.brand.logoLight}
                 alt={`${siteConfig.brand.name} Logo`}
                 fill
-                className="object-contain object-left block dark:hidden scale-[1.8] origin-left -translate-x-[10px]"
+                className="object-contain object-left block dark:hidden scale-[1.8] origin-left -translate-x-[8px]"
                 priority
               />
             </div>

@@ -52,18 +52,16 @@ export function AuthForm({ type, onSubmit }: AuthFormProps) {
         type === "login" ? "/api/auth/login" : "/api/auth/signup";
       const payload =
         type === "login"
-          ? { email: formData.email, password: formData.password }
+          ? { email: formData.email.trim(), password: formData.password }
           : {
-            fullName: formData.fullName,
-            email: formData.email,
+            fullName: formData.fullName.trim(),
+            email: formData.email.trim(),
             password: formData.password,
           };
 
       const response = await fetch(endpoint, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
@@ -73,35 +71,36 @@ export function AuthForm({ type, onSubmit }: AuthFormProps) {
         throw new Error(data.error || `${type} failed`);
       }
 
-      // Store token and update auth context immediately
-      if (data.token) {
-        const userData = data.user || { email: data.email };
-        authLogin(userData, data.token);
-        if (data.userId) {
-          localStorage.setItem("userId", data.userId);
-        }
-      }
+      // ── Persist credentials ─────────────────────────────────────────────
+      if (!data.token) throw new Error("No token received from server.");
+
+      // Always pull a clean user object — never store the raw API response
+      const cleanUser = data.user ?? { email: data.email };
+      authLogin(cleanUser, data.token);
+      if (data.userId) localStorage.setItem("userId", data.userId);
+      // ────────────────────────────────────────────────────────────────────
 
       setSuccess(
         data.message || `${type === "login" ? "Login" : "Sign up"} successful!`,
       );
 
-      // Call onSubmit callback if provided
+      // Pure notification callback — caller must NOT mutate localStorage
       onSubmit?.(data);
 
-      // Redirect after brief delay (just enough to flash success message)
+      // Redirect
       setTimeout(() => {
-        const user = data?.user || (data?.token ? data : null);
-        if (user?.email === "admin" || user?.role === "admin") {
-          router.push("/admin");
-        } else if (redirectPath) {
-          router.push(redirectPath);
-        } else {
-          router.push(type === "login" ? "/" : "/onboarding");
-        }
-      }, 500);
+        const role = data?.user?.role;
+        let dest = type === "login" ? "/" : "/onboarding";
+        if (role === "admin") dest = "/admin";
+        else if (redirectPath) dest = redirectPath;
+        // Use router.push for SPA navigation; fall back to hard redirect if it hangs
+        router.push(dest);
+        // Hard fallback – fires after 600 ms if router.push didn't navigate
+        setTimeout(() => { window.location.href = dest; }, 600);
+      }, 400);
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : `${type} failed. Please try again.`;
+      const errorMessage =
+        err instanceof Error ? err.message : `${type} failed. Please try again.`;
       setError(errorMessage);
       console.error(`${type} error:`, err);
     } finally {
@@ -111,12 +110,12 @@ export function AuthForm({ type, onSubmit }: AuthFormProps) {
 
   const isSignup = type === "signup";
   const isFormValid = isSignup
-    ? formData.email &&
+    ? formData.fullName.trim() &&
+    formData.email.trim() &&
     formData.password &&
     formData.confirmPassword &&
-    formData.fullName &&
     formData.password === formData.confirmPassword
-    : formData.email && formData.password;
+    : formData.email.trim() && formData.password;
 
   return (
     <div className="w-full max-w-md mx-auto">
