@@ -62,7 +62,7 @@ All "plugs" are managed via **Environment Variables**. Copy `.env.example` to `.
 Once the server is "plugged in," you will want to change the brand.
 - **Visuals**: See [WHITE_LABELING.md](WHITE_LABELING.md) for a step-by-step on changing logos, colors, and names.
 - **Theme Wizard**: Use our interactive tool to change your site colors (see below).
-- **Fleet**: Edit `lib/data/cars.ts` to add your specific vehicle inventory.
+- **Fleet**: Edit `template/catalog.ts` to add your specific vehicle inventory.
 
 ---
 

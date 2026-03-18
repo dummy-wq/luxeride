@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MessageCircle, X, Mail, Phone } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { siteConfig } from "@/lib/config";
+import { siteConfig } from "@/template/config";
 
 export function Contact() {
   const [isOpen, setIsOpen] = useState(false);

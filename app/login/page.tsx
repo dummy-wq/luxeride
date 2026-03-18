@@ -3,7 +3,7 @@
 import { AuthForm } from "@/components/auth-form";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { siteConfig } from "@/lib/config";
+import { siteConfig } from "@/template/config";
 import Image from "next/image";
 
 export default function LoginPage() {

@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "../template/theme.css";
 
 @theme inline {
   --font-sans: var(--font-sans, "Inter", "system-ui", sans-serif);
@@ -49,73 +50,6 @@
 
 @variant dark (&:is(.dark *));
 
-/* Light Mode - Gruvbox Light */
-:root {
-  --background: #f9f5d7;
-  --foreground: #1c1b19;
-  --card: #ebdbb2;
-  --card-foreground: #1c1b19;
-  --popover: #f9f5d7;
-  --popover-foreground: #1c1b19;
-  --primary: #af3a03;
-  --primary-foreground: #fbf1c7;
-  --secondary: #d5c4a1;
-  --secondary-foreground: #1c1b19;
-  --muted: #a89984;
-  --muted-foreground: #7c6f64;
-  --accent: #427b58;
-  --accent-foreground: #fbf1c7;
-  --destructive: #9d0006;
-  --destructive-foreground: #fbf1c7;
-  --border: #d5c4a1;
-  --input: #ebdbb2;
-  --ring: #af3a03;
-  --radius: 0.25rem;
-  --sidebar: #f2e5bc;
-  --sidebar-foreground: #1c1b19;
-  --sidebar-primary: #af3a03;
-  --sidebar-primary-foreground: #fbf1c7;
-  --sidebar-accent: #d5c4a1;
-  --sidebar-accent-foreground: #1c1b19;
-  --sidebar-border: #d5c4a1;
-  --sidebar-ring: #af3a03;
-}
-
-/* Dark Mode - Gruvbox Inspired */
-.dark {
-  --background: #141311;
-  --foreground: #fbf1c7;
-  --card: #1e1d1b;
-  --card-foreground: #fbf1c7;
-  --popover: #141311;
-  --popover-foreground: #fbf1c7;
-  --primary: #a6a922;
-  --primary-foreground: #141311;
-  --secondary: #32302f;
-  --secondary-foreground: #fbf1c7;
-  --muted: #3c3836;
-  --muted-foreground: #bdae93;
-  --accent: #fe8019;
-  --accent-foreground: #141311;
-  --destructive: #fb4934;
-  --destructive-foreground: #141311;
-  --border: #32302f;
-  --input: #1e1d1b;
-  --ring: #a6a922;
-  --chart-1: #a6a922;
-  --chart-2: #8ec07c;
-  --chart-3: #fe8019;
-  --chart-4: #fabd2f;
-  --chart-5: #83a598;
-  --sidebar: #141311;
-  --sidebar-foreground: #fbf1c7;
-  --sidebar-primary: #a6a922;
-  --sidebar-primary-foreground: #141311;
-  --sidebar-accent: #32302f;
-  --sidebar-accent-foreground: #fbf1c7;
-  --sidebar-border: #32302f;
-  --sidebar-ring: #a6a922;
-}
 
 @layer base {
   * {

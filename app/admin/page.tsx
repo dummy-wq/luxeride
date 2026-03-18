@@ -1,6 +1,6 @@
 import { Navigation } from "@/components/navigation";
 import { AdminDashboard } from "@/components/admin-dashboard";
-import { siteConfig } from "@/lib/config";
+import { siteConfig } from "@/template/config";
 
 export const metadata = {
     title: `Admin Dashboard | ${siteConfig.brand.name}`,

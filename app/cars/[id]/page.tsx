@@ -1,6 +1,6 @@
 "use client";
 
-import { siteConfig } from "@/lib/config";
+import { siteConfig } from "@/template/config";
 import { formatPrice } from "@/lib/utils";
 
 import { useState, useEffect } from "react";
@@ -21,13 +21,32 @@ import {
   Loader2,
   Heart,
   MapPin,
+  Search,
+  Settings,
+  Info,
+  Layers,
+  ShoppingBag,
+  Calendar,
+  Box,
+  Truck,
+  CreditCard,
+  User,
+  Activity,
+  Award
 } from "lucide-react";
+
+// Icon mapping for dynamic specs
+const IconMap: Record<string, any> = {
+  Fuel, Gauge, Users, Heart, Search, Shield, Zap, Droplet, 
+  Settings, Info, Layers, ShoppingBag, Calendar, Box, Truck, 
+  CreditCard, User, Activity, Award
+};
 import Image from "next/image";
 import Link from "next/link";
 import { INDIAN_CITIES } from "@/lib/constants";
 import { useToast } from "@/hooks/use-toast";
 
-import { carsDatabase } from "@/lib/data/cars";
+import { carsDatabase } from "@/template/catalog";
 
 export default function CarDetailPage() {
   const router = useRouter();
@@ -272,35 +291,27 @@ export default function CarDetailPage() {
                 <h1 className="text-4xl font-bold text-foreground">
                   {car.name}
                 </h1>
-                <p className="text-lg text-muted-foreground">
-                  Model {car.model}
-                </p>
+                {car.model && (
+                  <p className="text-lg text-muted-foreground">
+                    Model {car.model}
+                  </p>
+                )}
               </div>
 
-              {/* Quick Specs */}
+              {/* Quick Specs - Dynamic from metadataSchema */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <Card className="p-4 bg-card border-border text-center">
-                  <Fuel className="w-5 h-5 text-primary mx-auto mb-2" />
-                  <p className="text-sm text-muted-foreground">Mileage</p>
-                  <p className="font-bold text-foreground">{car.mileage}</p>
-                </Card>
-                <Card className="p-4 bg-card border-border text-center">
-                  <Users className="w-5 h-5 text-primary mx-auto mb-2" />
-                  <p className="text-sm text-muted-foreground">Seats</p>
-                  <p className="font-bold text-foreground">{car.seats}</p>
-                </Card>
-                <Card className="p-4 bg-card border-border text-center">
-                  <Gauge className="w-5 h-5 text-primary mx-auto mb-2" />
-                  <p className="text-sm text-muted-foreground">Transmission</p>
-                  <p className="font-bold text-foreground">
-                    {car.transmission}
-                  </p>
-                </Card>
-                <Card className="p-4 bg-card border-border text-center">
-                  <Droplet className="w-5 h-5 text-primary mx-auto mb-2" />
-                  <p className="text-sm text-muted-foreground">Fuel Type</p>
-                  <p className="font-bold text-foreground">{car.fuel}</p>
-                </Card>
+                {siteConfig.metadataSchema.map((spec) => {
+                  const Icon = IconMap[spec.icon] || Info;
+                  return (
+                    <Card key={spec.key} className="p-4 bg-card border-border text-center">
+                      <Icon className="w-5 h-5 text-primary mx-auto mb-2" />
+                      <p className="text-sm text-muted-foreground">{spec.label}</p>
+                      <p className="font-bold text-foreground">
+                        {car[spec.key] || "N/A"}
+                      </p>
+                    </Card>
+                  );
+                })}
               </div>
 
               {/* Performance Specs */}
@@ -360,33 +371,35 @@ export default function CarDetailPage() {
               </Card>
 
               {/* Policies */}
-              <Card className="p-6 bg-card border-border space-y-4">
-                <h3 className="text-xl font-bold text-foreground">
-                  Rental Policies
-                </h3>
-                <div className="space-y-3">
-                  <div className="flex gap-3 items-start">
-                    <Shield className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
-                    <div>
-                      <p className="font-semibold text-foreground">Insurance</p>
-                      <p className="text-sm text-muted-foreground">
-                        {car.insurance}
-                      </p>
+              {siteConfig.template.mode === "service" && (
+                <Card className="p-6 bg-card border-border space-y-4">
+                  <h3 className="text-xl font-bold text-foreground">
+                    {siteConfig.taxonomy.itemLabelSingular} Policies
+                  </h3>
+                  <div className="space-y-3">
+                    <div className="flex gap-3 items-start">
+                      <Shield className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
+                      <div>
+                        <p className="font-semibold text-foreground">Insurance</p>
+                        <p className="text-sm text-muted-foreground">
+                          {car.insurance || "Standard Coverage"}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex gap-3 items-start">
+                      <Zap className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
+                      <div>
+                        <p className="font-semibold text-foreground">
+                          Cancellation
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          {car.cancellation || "Free within 24h"}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                  <div className="flex gap-3 items-start">
-                    <Zap className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
-                    <div>
-                      <p className="font-semibold text-foreground">
-                        Cancellation
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {car.cancellation}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </Card>
+                </Card>
+              )}
             </div>
             <div className="lg:col-span-1">
               <div className="sticky top-24 space-y-6">
@@ -423,64 +436,74 @@ export default function CarDetailPage() {
                       <span className="text-4xl font-bold text-primary">
                         {formatPrice(car.price)}
                       </span>
-                      <span className="text-sm text-muted-foreground">/hr</span>
+                      <span className="text-sm text-muted-foreground">{siteConfig.taxonomy.priceSuffix}</span>
                     </div>
                   </div>
 
-                  {/* Booking Type */}
-                  <div className="flex bg-secondary rounded-lg p-1">
-                    <button
-                      onClick={() => setBookingType("hourly")}
-                      className={`flex-1 py-2 text-sm font-semibold rounded-md transition-all ${bookingType === "hourly" ? "bg-background text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
-                    >
-                      Hourly Rental
-                    </button>
-                    <button
-                      onClick={() => setBookingType("subscription")}
-                      className={`flex-1 py-2 text-sm font-semibold rounded-md transition-all ${bookingType === "subscription" ? "bg-background text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
-                    >
-                      Subscription
-                    </button>
-                  </div>
-
-                  {/* Selection */}
-                  <div className="space-y-4">
-                    {bookingType === "hourly" ? (
-                      <div>
-                        <label className="text-sm font-semibold text-foreground mb-2 block">
-                          Hours
-                        </label>
-                        <input
-                          type="number"
-                          min="1"
-                          value={hours}
-                          onChange={(e) => setHours(Number(e.target.value))}
-                          className="w-full px-3 py-2 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
-                        />
+                  {/* Booking/Purchase Logic */}
+                  {siteConfig.template.mode === "service" ? (
+                    <>
+                      {/* Booking Type */}
+                      <div className="flex bg-secondary rounded-lg p-1">
+                        <button
+                          onClick={() => setBookingType("hourly")}
+                          className={`flex-1 py-2 text-sm font-semibold rounded-md transition-all ${bookingType === "hourly" ? "bg-background text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+                        >
+                          Short Term
+                        </button>
+                        <button
+                          onClick={() => setBookingType("subscription")}
+                          className={`flex-1 py-2 text-sm font-semibold rounded-md transition-all ${bookingType === "subscription" ? "bg-background text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+                        >
+                          Long Term
+                        </button>
                       </div>
-                    ) : (
-                      <div>
-                        <label className="text-sm font-semibold text-foreground mb-2 block">
-                          Subscription Days (Min 7)
-                        </label>
-                        <input
-                          type="number"
-                          min="7"
-                          value={subscriptionDays}
-                          onChange={(e) =>
-                            setSubscriptionDays(
-                              Math.max(7, Number(e.target.value)),
-                            )
-                          }
-                          className="w-full px-3 py-2 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
-                        />
-                        <p className="text-xs text-green-500 mt-2">
-                          Special discounted rate applied!
-                        </p>
-                      </div>
-                    )}
 
-                    {/* City Selection */}
+                      {/* Selection */}
+                      <div className="space-y-4">
+                        {bookingType === "hourly" ? (
+                          <div>
+                            <label className="text-sm font-semibold text-foreground mb-2 block">
+                              Hours
+                            </label>
+                            <input
+                              type="number"
+                              min="1"
+                              value={hours}
+                              onChange={(e) => setHours(Number(e.target.value))}
+                              className="w-full px-3 py-2 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                            />
+                          </div>
+                        ) : (
+                          <div>
+                            <label className="text-sm font-semibold text-foreground mb-2 block">
+                              Duration (Days)
+                            </label>
+                            <input
+                              type="number"
+                              min="7"
+                              value={subscriptionDays}
+                              onChange={(e) =>
+                                setSubscriptionDays(
+                                  Math.max(7, Number(e.target.value)),
+                                )
+                              }
+                              className="w-full px-3 py-2 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </>
+                  ) : (
+                    <div className="space-y-4">
+                      <p className="text-sm text-muted-foreground">
+                        Ready to purchase? Click below to proceed to checkout.
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Shared Details: City & Address */}
+                  <div className="space-y-4 pt-4 border-t border-border">
                     <div>
                       <label className="text-sm font-semibold text-foreground mb-2 block flex items-center gap-1">
                         <MapPin className="w-3 h-3 text-primary" /> Delivery City
@@ -496,7 +519,6 @@ export default function CarDetailPage() {
                       </select>
                     </div>
 
-                    {/* Address Prompt */}
                     <div>
                       <label className="text-sm font-semibold text-foreground mb-2 block">
                         Delivery Address
@@ -552,7 +574,7 @@ export default function CarDetailPage() {
                         {isVerifying ? (
                           <span className="flex items-center gap-2">
                             <Loader2 className="w-5 h-5 animate-spin" />
-                            Verifying availability...
+                            Verifying...
                           </span>
                         ) : isBooking ? (
                           <span className="flex items-center gap-2">
@@ -562,10 +584,10 @@ export default function CarDetailPage() {
                         ) : bookingStatus === "success" ? (
                           <span className="flex items-center gap-2">
                             <CheckCircle2 className="w-5 h-5 text-green-400" />
-                            Booked!
+                            Success!
                           </span>
                         ) : (
-                          isAuthenticated && (!user.phone || !user.licenseNumber || !user.address || !user.city) ? "Save requirements and book" : "Book Now"
+                          siteConfig.taxonomy.actionLabel
                         )}
                       </Button>
 

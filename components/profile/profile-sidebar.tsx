@@ -3,7 +3,7 @@
 import { User as UserIcon, Wallet, LogOut } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { UserProfile, Payment } from "@/lib/types";
-import { siteConfig } from "@/lib/config";
+import { siteConfig } from "@/template/config";
 import { formatPrice } from "@/lib/utils";
 
 interface ProfileSidebarProps {

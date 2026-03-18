@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Award, Users, Zap, Shield } from "lucide-react";
 import Link from "next/link";
-import { siteConfig } from "@/lib/config";
+import { siteConfig } from "@/template/config";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Zap,

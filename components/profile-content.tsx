@@ -14,7 +14,7 @@ import { PersonalInfo } from "./profile/personal-info";
 import { PaymentHistory } from "./profile/payment-history";
 
 import { Booking, Payment, UserProfile } from "@/lib/types";
-import { siteConfig } from "@/lib/config";
+import { siteConfig } from "@/template/config";
 
 export function ProfileContent() {
   const router = useRouter();

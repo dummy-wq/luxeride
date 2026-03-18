@@ -3,17 +3,44 @@
 import { useState, useEffect, useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Fuel, Gauge, Users, Heart, Search, Shield, Zap, Droplet } from "lucide-react";
+import { 
+  Fuel, 
+  Gauge, 
+  Users, 
+  Heart, 
+  Search, 
+  Shield, 
+  Zap, 
+  Droplet,
+  Settings,
+  Info,
+  Layers,
+  ShoppingBag,
+  Calendar,
+  Box,
+  Truck,
+  CreditCard,
+  User,
+  Activity,
+  Award
+} from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Slider } from "@/components/ui/slider";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/context/auth-context";
-import { siteConfig } from "@/lib/config";
+import { siteConfig } from "@/template/config";
 import { formatPrice } from "@/lib/utils";
 
-import { cars, carsDatabase } from "@/lib/data/cars";
+// Icon mapping for dynamic specs
+const IconMap: Record<string, any> = {
+  Fuel, Gauge, Users, Heart, Search, Shield, Zap, Droplet, 
+  Settings, Info, Layers, ShoppingBag, Calendar, Box, Truck, 
+  CreditCard, User, Activity, Award
+};
+
+import { cars, carsDatabase } from "@/template/catalog";
 
 export function CarsShowcase() {
   const router = useRouter();
@@ -212,10 +239,10 @@ export function CarsShowcase() {
         {/* Header */}
         <div className="text-center mb-12 space-y-4">
           <h2 className="text-4xl md:text-5xl font-bold text-foreground">
-            {carsPage.heading}
+            {siteConfig.taxonomy.catalogHeading}
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            {carsPage.subheading}
+            {siteConfig.taxonomy.catalogSubheading}
           </p>
         </div>
 
@@ -268,7 +295,7 @@ export function CarsShowcase() {
                 />
               </div>
               <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">
-                {formatPrice(priceRange[0])} — {formatPrice(priceRange[1])}/hr
+                {formatPrice(priceRange[0])} — {formatPrice(priceRange[1])}{siteConfig.taxonomy.priceSuffix}
               </span>
             </div>
           </div>
@@ -301,7 +328,7 @@ export function CarsShowcase() {
                       src={selectedCar.image}
                       alt={selectedCar.name}
                       fill
-                      className={`object-cover ${selectedCar.name === "Jaguar XE" ? "scale-x-[-1]" : ""}`}
+                      className="object-cover"
                       priority
                     />
                   </Card>
@@ -319,38 +346,20 @@ export function CarsShowcase() {
                     </p>
                   </div>
 
-                  {/* Quick Specs */}
+                  {/* Quick Specs - Dynamic from metadataSchema */}
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <Card className="p-4 bg-card border-border text-center">
-                      <Fuel className="w-5 h-5 text-primary mx-auto mb-2" />
-                      <p className="text-sm text-muted-foreground">Mileage</p>
-                      <p className="font-bold text-foreground">
-                        {selectedCar.mileage}
-                      </p>
-                    </Card>
-                    <Card className="p-4 bg-card border-border text-center">
-                      <Users className="w-5 h-5 text-primary mx-auto mb-2" />
-                      <p className="text-sm text-muted-foreground">Seats</p>
-                      <p className="font-bold text-foreground">
-                        {selectedCar.seats}
-                      </p>
-                    </Card>
-                    <Card className="p-4 bg-card border-border text-center">
-                      <Gauge className="w-5 h-5 text-primary mx-auto mb-2" />
-                      <p className="text-sm text-muted-foreground">
-                        Transmission
-                      </p>
-                      <p className="font-bold text-foreground">
-                        {selectedCar.transmission}
-                      </p>
-                    </Card>
-                    <Card className="p-4 bg-card border-border text-center">
-                      <Droplet className="w-5 h-5 text-primary mx-auto mb-2" />
-                      <p className="text-sm text-muted-foreground">Fuel Type</p>
-                      <p className="font-bold text-foreground">
-                        {selectedCar.fuel}
-                      </p>
-                    </Card>
+                    {siteConfig.metadataSchema.map((spec) => {
+                      const Icon = IconMap[spec.icon] || Info;
+                      return (
+                        <Card key={spec.key} className="p-4 bg-card border-border text-center">
+                          <Icon className="w-5 h-5 text-primary mx-auto mb-2" />
+                          <p className="text-sm text-muted-foreground">{spec.label}</p>
+                          <p className="font-bold text-foreground">
+                            {selectedCar[spec.key] || "N/A"}
+                          </p>
+                        </Card>
+                      );
+                    })}
                   </div>
 
                   {/* Performance Specs */}
@@ -420,35 +429,37 @@ export function CarsShowcase() {
                   </Card>
 
                   {/* Policies */}
-                  <Card className="p-6 bg-card border-border space-y-4">
-                    <h3 className="text-xl font-bold text-foreground">
-                      Rental Policies
-                    </h3>
-                    <div className="space-y-3">
-                      <div className="flex gap-3 items-start">
-                        <Shield className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
-                        <div>
-                          <p className="font-semibold text-foreground">
-                            Insurance
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            {selectedCar.insurance}
-                          </p>
+                  {siteConfig.template.mode === "service" && (
+                    <Card className="p-6 bg-card border-border space-y-4">
+                      <h3 className="text-xl font-bold text-foreground">
+                        Terms & Conditions
+                      </h3>
+                      <div className="space-y-3">
+                        <div className="flex gap-3 items-start">
+                          <Shield className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
+                          <div>
+                            <p className="font-semibold text-foreground">
+                              Insurance
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              {selectedCar.insurance || "Standard Coverage"}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex gap-3 items-start">
+                          <Zap className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
+                          <div>
+                            <p className="font-semibold text-foreground">
+                              Cancellation
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              {selectedCar.cancellation || "Free within 24h"}
+                            </p>
+                          </div>
                         </div>
                       </div>
-                      <div className="flex gap-3 items-start">
-                        <Zap className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
-                        <div>
-                          <p className="font-semibold text-foreground">
-                            Cancellation
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            {selectedCar.cancellation}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </Card>
+                    </Card>
+                  )}
                 </div>
 
                 {/* ── Booking Sidebar ── */}
@@ -463,7 +474,7 @@ export function CarsShowcase() {
                           <span className="text-4xl font-bold text-primary">
                             {formatPrice(selectedCar.price)}
                           </span>
-                          <span className="text-sm text-muted-foreground">/hr</span>
+                          <span className="text-sm text-muted-foreground">{siteConfig.taxonomy.priceSuffix}</span>
                         </div>
                       </div>
 
@@ -477,7 +488,7 @@ export function CarsShowcase() {
                         onClick={() => router.push(`/cars/${selectedCarId}`)}
                         className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6 font-semibold text-lg transition-all active:scale-[0.98]"
                       >
-                        Book Now
+                        {siteConfig.taxonomy.actionLabel}
                       </Button>
                     </Card>
                   </div>
@@ -544,7 +555,7 @@ export function CarsShowcase() {
                                     : "bg-red-500/20 text-red-400 border border-red-500/30"
                               }`}
                             >
-                              {availability}
+                              {siteConfig.template.showAvailability ? availability : siteConfig.taxonomy.itemLabelSingular}
                             </div>
 
                             {/* Car Image */}
@@ -554,14 +565,14 @@ export function CarsShowcase() {
                                   src={car.image}
                                   alt={car.name}
                                   fill
-                                  className={`object-cover ${car.name === "Jaguar XE" ? "scale-x-[-1]" : ""}`}
+                                  className="object-cover"
                                 />
                               </div>
                               {shaded && (
                                 <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex items-center justify-center z-10">
                                   <span className="text-white font-black text-xs uppercase tracking-tighter border-2 border-white/50 px-3 py-1 rotate-12">
                                     {availability === "Available"
-                                      ? "Reservation Required"
+                                      ? siteConfig.taxonomy.reservationRequiredLabel
                                       : availability}
                                   </span>
                                 </div>
@@ -587,22 +598,17 @@ export function CarsShowcase() {
                                 </p>
                               </div>
 
-                              {/* Specs */}
+                              {/* Specs - Dynamic from metadataSchema */}
                               <div className="space-y-2">
-                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                  <Fuel className="w-4 h-4 text-primary" />
-                                  <span>
-                                    {car.mileage} • {car.fuel}
-                                  </span>
-                                </div>
-                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                  <Gauge className="w-4 h-4 text-primary" />
-                                  <span>{car.transmission}</span>
-                                </div>
-                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                  <Users className="w-4 h-4 text-primary" />
-                                  <span>{car.seats} Seats</span>
-                                </div>
+                                {siteConfig.metadataSchema.slice(0, 3).map((spec) => {
+                                  const Icon = IconMap[spec.icon] || Info;
+                                  return (
+                                    <div key={spec.key} className="flex items-center gap-2 text-sm text-muted-foreground">
+                                      <Icon className="w-4 h-4 text-primary" />
+                                      <span>{car[spec.key] || "N/A"}</span>
+                                    </div>
+                                  );
+                                })}
                               </div>
 
                               {/* Price */}
@@ -612,7 +618,7 @@ export function CarsShowcase() {
                                     {car.price}
                                   </span>
                                   <span className="text-sm text-muted-foreground">
-                                    /hr
+                                    {siteConfig.taxonomy.priceSuffix}
                                   </span>
                                 </div>
                               </div>

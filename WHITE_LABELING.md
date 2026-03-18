@@ -8,7 +8,7 @@ Follow these steps to customize the template for your business.
 
 All text, site names, contact info, and SEO metadata are dynamically loaded from a single source of truth.
 
-1. Open `lib/config.ts`.
+1. Open `template/config.ts`.
 2. Locate the `brand` object:
 ```typescript
 brand: {
@@ -29,7 +29,7 @@ brand: {
 
 We have centralized the currency and virtual currency branding:
 
-1. Locate the `ui` object in `lib/config.ts`:
+1. Locate the `ui` object in `template/config.ts`:
 ```typescript
 ui: {
   currencySymbol: "₹",    // Changes all pricing symbols universally
@@ -42,14 +42,14 @@ ui: {
 
 The application supports responsive light/dark mode logo switching.
 1. Place your transparent `.png` or `.svg` logo files into the `public/` directory.
-2. Update the `logoDark` and `logoLight` paths in `lib/config.ts` to match your filenames.
+2. Update the `logoDark` and `logoLight` paths in `template/config.ts` to match your filenames.
 3. The navigation header will automatically slice the first letter off your `brand.name` if you want your logo graphic to double as the first letter (e.g., logo `[Y]` + text `ourBrand`).
     - *Note: To disable this behavior and show the full text, edit `components/navigation.tsx` and change `.slice(1)` back to the full variable.*
 
 ## 3. Customizing the Car Catalog
 
 Your vehicle inventory is completely decoupled from the UI. 
-1. Open `lib/data/cars.ts`.
+1. Open `template/catalog.ts`.
 2. To add a new car, create a new object in the `cars` and `carsDatabase` arrays:
 ```typescript
 {
@@ -67,7 +67,7 @@ Your vehicle inventory is completely decoupled from the UI.
 ## 4. Theme & Colors
 
 The UI styling is powered by Tailwind CSS and CSS Variables. You can easily switch the brand colors:
-1. Open `app/globals.css`.
+1. Open `template/theme.css`.
 2. Adjust the `--primary`, `--secondary`, and `--background` hex codes under `:root` (for Light Mode) and `.dark` (for Dark Mode).
 3. We highly recommend using HSL or Hex variables to ensure components maintain contrast.
 

@@ -4,7 +4,7 @@ import { Navigation } from "@/components/navigation";
 import { Contact } from "@/components/contact";
 import { Card } from "@/components/ui/card";
 import { Shield, CreditCard, FileText, AlertTriangle, Car } from "lucide-react";
-import { siteConfig } from "@/lib/config";
+import { siteConfig } from "@/template/config";
 
 export default function HelpAndSupportPage() {
   return (

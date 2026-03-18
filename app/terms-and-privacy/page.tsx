@@ -1,7 +1,7 @@
 import { Navigation } from "@/components/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { siteConfig } from "@/lib/config";
+import { siteConfig } from "@/template/config";
 
 export default function TermsAndPrivacyPage() {
   return (

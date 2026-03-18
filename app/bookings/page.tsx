@@ -11,7 +11,7 @@ import Link from "next/link";
 import { Navigation } from "@/components/navigation";
 import { CountdownTimer } from "@/components/ui/countdown-timer";
 import { Booking } from "@/lib/types";
-import { cars } from "@/lib/data/cars";
+import { cars } from "@/template/catalog";
 
 export default function BookingsPage() {
   const router = useRouter();

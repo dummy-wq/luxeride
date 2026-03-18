@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 
 import { useAuth } from "@/lib/context/auth-context";
-import { siteConfig } from "@/lib/config";
+import { siteConfig } from "@/template/config";
 
 export function Navigation() {
   const { theme, setTheme } = useTheme();
@@ -147,7 +147,7 @@ export function Navigation() {
                   variant="outline"
                   size="icon"
                   className="text-foreground"
-                  title="My Bookings"
+                  title={siteConfig.taxonomy.ordersLabel}
                   asChild
                 >
                   <Link href="/bookings">
@@ -247,7 +247,7 @@ export function Navigation() {
                     asChild
                   >
                     <Link href="/bookings" onClick={() => setIsOpen(false)}>
-                      <CalendarDays className="w-4 h-4" /> Bookings
+                      <CalendarDays className="w-4 h-4" /> {siteConfig.taxonomy.ordersLabel}
                     </Link>
                   </Button>
                   <Button

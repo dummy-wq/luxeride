@@ -1,7 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import { connectToDatabase } from "@/lib/db/mongodb";
 import { verifyAuth } from "@/lib/auth/verify";
-import { cars as initialCars } from "@/lib/data/cars";
+import { cars as initialCars } from "@/template/catalog";
 
 // Helper to get all cars
 export async function GET() {

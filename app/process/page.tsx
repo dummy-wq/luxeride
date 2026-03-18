@@ -4,7 +4,7 @@ import { formatPrice } from "@/lib/utils";
 
 import { Navigation } from "@/components/navigation";
 import { Card } from "@/components/ui/card";
-import { siteConfig } from "@/lib/config";
+import { siteConfig } from "@/template/config";
 import {
   QrCode,
   CreditCard,

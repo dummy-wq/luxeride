@@ -15,18 +15,20 @@ import {
     Clock,
     Unlock,
     Key,
-    Car,
+    Package,
     Settings,
     Copy,
     Download,
     Check,
     Palette,
     Type,
+    Layers,
+    ExternalLink,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-import { siteConfig } from "@/lib/config";
+import { siteConfig } from "@/template/config";
 import { FleetManager } from "@/components/fleet-manager";
 
 // ─── Script content (mirrors scripts/theme-wizard.js) ───────────────────────
@@ -322,6 +324,142 @@ function CustomisePanel() {
     );
 }
 
+// ─── Template Settings Tab ──────────────────────────────────────────────────
+function TemplateSettingsPanel() {
+    const { template, taxonomy, metadataSchema, ui } = siteConfig;
+
+    const configEntries = [
+        { label: "Template Mode", value: template.mode, highlight: true },
+        { label: "Show Availability", value: template.showAvailability ? "Yes" : "No" },
+        { label: "Booking Enabled", value: template.enableBooking ? "Yes" : "No" },
+        { label: "Item Label", value: `${taxonomy.itemLabelSingular} / ${taxonomy.itemLabelPlural}` },
+        { label: "Category Label", value: taxonomy.categoryLabel },
+        { label: "CTA Text", value: taxonomy.actionLabel },
+        { label: "Price Suffix", value: taxonomy.priceSuffix || "(none)" },
+        { label: "Currency", value: ui.currencySymbol },
+        { label: "Orders Label", value: taxonomy.ordersLabel },
+    ];
+
+    return (
+        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            {/* Current Config Summary */}
+            <Card className="p-6 bg-card border-border shadow-md rounded-2xl space-y-6">
+                <div className="flex items-center gap-3">
+                    <div className="p-2.5 bg-primary/10 rounded-xl">
+                        <Layers className="w-5 h-5 text-primary" />
+                    </div>
+                    <div>
+                        <h2 className="font-black text-foreground tracking-tight text-lg">Current Configuration</h2>
+                        <p className="text-xs text-muted-foreground">These values are read from <span className="font-mono">lib/config.ts</span></p>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {configEntries.map((entry) => (
+                        <div
+                            key={entry.label}
+                            className={`p-4 rounded-xl border transition-all ${
+                                entry.highlight
+                                    ? "border-primary/30 bg-primary/5"
+                                    : "border-border bg-secondary/20"
+                            }`}
+                        >
+                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">
+                                {entry.label}
+                            </p>
+                            <p className={`text-sm font-bold ${
+                                entry.highlight ? "text-primary" : "text-foreground"
+                            }`}>
+                                {entry.value}
+                            </p>
+                        </div>
+                    ))}
+                </div>
+            </Card>
+
+            {/* Metadata Schema */}
+            <Card className="p-6 bg-card border-border shadow-md rounded-2xl space-y-6">
+                <div className="flex items-center gap-3">
+                    <div className="p-2.5 bg-primary/10 rounded-xl">
+                        <Settings className="w-5 h-5 text-primary" />
+                    </div>
+                    <div>
+                        <h2 className="font-black text-foreground tracking-tight text-lg">Metadata Schema</h2>
+                        <p className="text-xs text-muted-foreground">These fields appear as &ldquo;Quick Specs&rdquo; on cards and detail pages</p>
+                    </div>
+                </div>
+
+                <div className="space-y-2">
+                    {metadataSchema.map((spec, i) => (
+                        <div
+                            key={spec.key}
+                            className="flex items-center gap-4 p-3 bg-secondary/20 rounded-xl border border-border"
+                        >
+                            <span className="text-xs font-bold text-muted-foreground w-6 text-center">{i + 1}</span>
+                            <div className="flex-1">
+                                <span className="text-sm font-bold text-foreground">{spec.label}</span>
+                                <span className="text-xs text-muted-foreground ml-2">key: <span className="font-mono">{spec.key}</span></span>
+                            </div>
+                            <span className="text-xs text-muted-foreground font-mono bg-background px-2 py-1 rounded border border-border">
+                                {spec.icon}
+                            </span>
+                        </div>
+                    ))}
+                </div>
+            </Card>
+
+            {/* How to Customise */}
+            <Card className="p-6 bg-card border-border shadow-md rounded-2xl space-y-6">
+                <div className="flex items-center gap-3">
+                    <div className="p-2.5 bg-primary/10 rounded-xl">
+                        <ExternalLink className="w-5 h-5 text-primary" />
+                    </div>
+                    <div>
+                        <h2 className="font-black text-foreground tracking-tight text-lg">How to Customise</h2>
+                        <p className="text-xs text-muted-foreground">Make this template your own in 3 easy steps</p>
+                    </div>
+                </div>
+
+                <div className="space-y-4">
+                    {[
+                        {
+                            step: "1",
+                            title: "Set your template mode",
+                            desc: `Open lib/config.ts and change template.mode to "service" (rentals, bookings) or "shopping" (e-commerce, direct purchase).`,
+                        },
+                        {
+                            step: "2",
+                            title: "Update taxonomy & labels",
+                            desc: `Change taxonomy.itemLabelSingular (e.g. "Fruit"), itemLabelPlural ("Fruits"), actionLabel ("Buy Now"), priceSuffix ("/kg" or ""), etc.`,
+                        },
+                        {
+                            step: "3",
+                            title: "Define your product specs",
+                            desc: `Edit metadataSchema to list the specs you want shown on product cards. E.g. { key: "origin", label: "Origin", icon: "MapPin" }. The admin form and cards update automatically.`,
+                        },
+                    ].map((item) => (
+                        <div key={item.step} className="flex gap-4 items-start">
+                            <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center flex-shrink-0 font-black text-sm">
+                                {item.step}
+                            </div>
+                            <div>
+                                <p className="font-bold text-foreground text-sm">{item.title}</p>
+                                <p className="text-xs text-muted-foreground leading-relaxed mt-0.5">{item.desc}</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                <div className="rounded-xl bg-primary/5 border border-primary/20 p-4">
+                    <p className="text-xs text-foreground">
+                        <span className="font-bold">📄 Full documentation:</span> See <span className="font-mono">WHITE_LABELING.md</span> and <span className="font-mono">PLUG_AND_PLAY.md</span> in the project root for detailed guides.
+                    </p>
+                </div>
+            </Card>
+        </div>
+    );
+}
+
 // ─── Main Component ──────────────────────────────────────────────────────────
 export function AdminDashboard() {
     const { toast } = useToast();
@@ -329,7 +467,7 @@ export function AdminDashboard() {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState("");
-    const [activeTab, setActiveTab] = useState<"users" | "fleet" | "customise">("users");
+    const [activeTab, setActiveTab] = useState<"users" | "catalog" | "customise" | "template">("users");
     const router = useRouter();
 
     const fetchUsers = async () => {
@@ -422,8 +560,9 @@ export function AdminDashboard() {
 
     const tabHeadings: Record<typeof activeTab, { title: string; subtitle: string }> = {
         users:     { title: "User Management",    subtitle: `Monitor and manage all ${siteConfig.brand.name} members` },
-        fleet:     { title: "Fleet Management",   subtitle: "Manage your vehicle inventory and pricing" },
+        catalog:   { title: "Catalog Management", subtitle: `Manage your ${siteConfig.taxonomy.itemLabelPlural.toLowerCase()} inventory and pricing` },
         customise: { title: "Customise",          subtitle: "Adjust your brand colours, typography and scripts" },
+        template:  { title: "Template Settings",  subtitle: "View your current template configuration and customisation guide" },
     };
 
     return (
@@ -443,8 +582,8 @@ export function AdminDashboard() {
                     </div>
 
                     {/* Tab switcher */}
-                    <div className="flex items-center gap-1.5 bg-secondary/50 p-1.5 rounded-2xl border border-border">
-                        {(["users", "fleet", "customise"] as const).map((tab) => (
+                    <div className="flex items-center gap-1.5 bg-secondary/50 p-1.5 rounded-2xl border border-border flex-wrap">
+                        {(["users", "catalog", "customise", "template"] as const).map((tab) => (
                             <Button
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}
@@ -452,8 +591,9 @@ export function AdminDashboard() {
                                 className={`rounded-xl gap-2 capitalize ${activeTab === tab ? "shadow-lg" : ""}`}
                             >
                                 {tab === "users"     && <Users   className="w-4 h-4" />}
-                                {tab === "fleet"     && <Car     className="w-4 h-4" />}
+                                {tab === "catalog"   && <Package className="w-4 h-4" />}
                                 {tab === "customise" && <Palette className="w-4 h-4" />}
+                                {tab === "template"  && <Layers  className="w-4 h-4" />}
                                 {tab.charAt(0).toUpperCase() + tab.slice(1)}
                             </Button>
                         ))}
@@ -604,13 +744,15 @@ export function AdminDashboard() {
                     </>
                 )}
 
-                {activeTab === "fleet" && <FleetManager />}
+                {activeTab === "catalog" && <FleetManager />}
 
                 {activeTab === "customise" && <CustomisePanel />}
 
+                {activeTab === "template" && <TemplateSettingsPanel />}
+
                 {/* Footer */}
                 <div className="mt-8 flex items-center justify-between text-sm text-muted-foreground">
-                    <p>Showing {activeTab === "users" ? filteredUsers.length : activeTab === "fleet" ? "all" : "—"} items</p>
+                    <p>Showing {activeTab === "users" ? filteredUsers.length : activeTab === "catalog" ? "all" : "—"} items</p>
                     <p className="flex items-center gap-2">
                         <ShieldCheck className="w-4 h-4 text-primary" />
                         {siteConfig.brand.name} Secure Admin Workspace

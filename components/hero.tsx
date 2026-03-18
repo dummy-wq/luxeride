@@ -6,7 +6,7 @@ import { ChevronDown, ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 import Image from "next/image";
-import { siteConfig } from "@/lib/config";
+import { siteConfig } from "@/template/config";
 
 export function Hero() {
   const [isVisible, setIsVisible] = useState(false);

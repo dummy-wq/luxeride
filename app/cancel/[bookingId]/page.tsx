@@ -17,7 +17,7 @@ import {
 import { useAuth } from "@/lib/context/auth-context";
 
 import { Booking } from "@/lib/types";
-import { siteConfig } from "@/lib/config";
+import { siteConfig } from "@/template/config";
 import { formatPrice } from "@/lib/utils";
 
 export default function CancelBookingPage() {

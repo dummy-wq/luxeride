@@ -5,7 +5,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { ThemeProvider } from "@/components/theme-provider";
 import { PageTransition } from "@/components/page-transition";
 import { Toaster } from "@/components/ui/toaster";
-import { siteConfig } from "@/lib/config";
+import { siteConfig } from "@/template/config";
 import "./globals.css";
 
 const montserrat = Montserrat({

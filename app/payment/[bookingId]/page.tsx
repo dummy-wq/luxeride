@@ -5,7 +5,7 @@ import { useRouter, useParams } from "next/navigation";
 import { Navigation } from "@/components/navigation";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { siteConfig } from "@/lib/config";
+import { siteConfig } from "@/template/config";
 import { formatPrice } from "@/lib/utils";
 import {
     CreditCard,
