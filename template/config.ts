@@ -27,7 +27,7 @@ export const siteConfig = {
   // ── Template Setting ──────────────────────────────────
   // Change "service" to "shopping" to switch the layout/logic from a rental service to an e-commerce store.
   template: {
-    mode: "shopping" as "service" | "shopping",
+    mode: "service" as "service" | "shopping",
     showAvailability: true, // Shows "Available", "Booked" etc on cards
     enableBooking: true,   // If false, replaces booking with direct purchase/contact
     // Shopping mode: quantity picker config

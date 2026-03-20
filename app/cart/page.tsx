@@ -32,7 +32,7 @@ export default function CartPage() {
   const router = useRouter();
   
   const [mounted, setMounted] = useState(false);
-  const [selectedCity, setSelectedCity] = useState(INDIAN_CITIES[0]);
+  const [selectedCity, setSelectedCity] = useState<string>(INDIAN_CITIES[0]);
   const [address, setAddress] = useState("");
   const [phone, setPhone] = useState("");
   const [licenseNumber, setLicenseNumber] = useState("");
@@ -54,7 +54,7 @@ export default function CartPage() {
       setPhone(user.phone || "");
       setLicenseNumber(user.licenseNumber || "");
       setAddress(user.address || "");
-      if (user.city && INDIAN_CITIES.includes(user.city)) {
+      if (user.city && (INDIAN_CITIES as readonly string[]).includes(user.city)) {
         setSelectedCity(user.city);
       }
     }
