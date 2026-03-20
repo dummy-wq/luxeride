@@ -150,7 +150,7 @@ export function Navigation() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="text-primary hover:bg-primary/10 relative"
+                    className="text-foreground relative"
                     title={siteConfig.taxonomy.cartLabel}
                     asChild
                   >
@@ -167,7 +167,7 @@ export function Navigation() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="text-primary hover:bg-primary/10"
+                    className="text-foreground"
                     title={siteConfig.taxonomy.ordersLabel}
                     asChild
                   >
@@ -179,7 +179,7 @@ export function Navigation() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="text-primary hover:bg-primary/10"
+                  className="text-foreground"
                   title="Profile"
                   asChild
                 >
@@ -191,7 +191,7 @@ export function Navigation() {
                   <Button
                     variant="ghost"
                     onClick={handleLogout}
-                    className="text-primary hover:bg-primary/10"
+                    className="text-foreground"
                   >
                     Logout
                   </Button>
@@ -265,8 +265,8 @@ export function Navigation() {
                 <>
                   {isShoppingMode ? (
                     <Button
-                      variant="outline"
-                      className="w-full flex items-center justify-center gap-2 relative"
+                      variant="ghost"
+                      className="w-full flex items-center justify-center gap-2 relative bg-primary/5 text-primary hover:!bg-primary/15"
                       asChild
                     >
                       <Link href="/cart" onClick={() => setIsOpen(false)}>
@@ -281,8 +281,8 @@ export function Navigation() {
                     </Button>
                   ) : (
                     <Button
-                      variant="outline"
-                      className="w-full flex items-center justify-center gap-2"
+                      variant="ghost"
+                      className="w-full flex items-center justify-center gap-2 bg-primary/5 text-primary hover:!bg-primary/15"
                       asChild
                     >
                       <Link href="/bookings" onClick={() => setIsOpen(false)}>
@@ -291,8 +291,8 @@ export function Navigation() {
                     </Button>
                   )}
                   <Button
-                    variant="outline"
-                    className="w-full flex items-center justify-center gap-2"
+                    variant="ghost"
+                    className="w-full flex items-center justify-center gap-2 bg-primary/5 text-primary hover:!bg-primary/15"
                     asChild
                   >
                     <Link href="/profile" onClick={() => setIsOpen(false)}>
@@ -302,7 +302,7 @@ export function Navigation() {
                   <Button
                     onClick={handleLogout}
                     variant="ghost"
-                    className="w-full text-primary hover:bg-primary/10"
+                    className="w-full text-foreground hover:!text-primary hover:!bg-primary/10"
                   >
                     Logout
                   </Button>
