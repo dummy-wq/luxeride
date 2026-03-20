@@ -55,9 +55,27 @@ export default function CarDetailPage() {
   const { toast } = useToast();
   const params = useParams();
   const id = params.id as string;
-  const car =
-    carsDatabase[id as keyof typeof carsDatabase] || carsDatabase["1"];
   const isShoppingMode = siteConfig.template.mode === "shopping";
+  // Attempt to load from static catalog first
+  const staticCar = carsDatabase[id as keyof typeof carsDatabase];
+  
+  const [car, setCar] = useState<any>(staticCar || carsDatabase["1"]);
+  const [loadingCar, setLoadingCar] = useState(!staticCar);
+
+  useEffect(() => {
+    if (!staticCar) {
+      // Fetch dynamic car from API if not found in static catalog
+      fetch(`/api/cars`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.cars) {
+            const found = data.cars.find((c: any) => String(c._id || c.id) === id);
+            if (found) setCar(found);
+          }
+        })
+        .finally(() => setLoadingCar(false));
+    }
+  }, [id, staticCar]);
   const { addItem, isInCart, getQuantity, updateQuantity } = useCart();
   const [bookingType, setBookingType] = useState<"hourly" | "subscription">(
     "hourly",
@@ -337,17 +355,17 @@ export default function CarDetailPage() {
                   <div>
                     <p className="text-sm text-muted-foreground mb-1">Engine</p>
                     <p className="font-semibold text-foreground">
-                      {car.engine}
+                      {car.engine || "N/A"}
                     </p>
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground mb-1">Power</p>
-                    <p className="font-semibold text-foreground">{car.power}</p>
+                    <p className="font-semibold text-foreground">{car.power || "N/A"}</p>
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground mb-1">Torque</p>
                     <p className="font-semibold text-foreground">
-                      {car.torque}
+                      {car.torque || "N/A"}
                     </p>
                   </div>
                   <div>
@@ -355,7 +373,7 @@ export default function CarDetailPage() {
                       0-100 km/h
                     </p>
                     <p className="font-semibold text-foreground">
-                      {car.acceleration}
+                      {car.acceleration || "N/A"}
                     </p>
                   </div>
                   <div>
@@ -363,7 +381,7 @@ export default function CarDetailPage() {
                       Top Speed
                     </p>
                     <p className="font-semibold text-foreground">
-                      {car.topSpeed}
+                      {car.topSpeed || "N/A"}
                     </p>
                   </div>
                 </div>
@@ -375,7 +393,7 @@ export default function CarDetailPage() {
                   Premium Features
                 </h3>
                 <div className="grid grid-cols-2 gap-3">
-                  {car.features.map((feature, index) => (
+                  {car.features?.map((feature: string, index: number) => (
                     <div key={index} className="flex items-center gap-2">
                       <div className="w-2 h-2 bg-primary rounded-full" />
                       <span className="text-foreground">{feature}</span>

@@ -6,22 +6,22 @@
 
 :root {
   /* Fonts */
-  --font-sans: "Inter", "system-ui", sans-serif;
-  --font-heading: "Montserrat", sans-serif;
+  --font-sans: 'Inter', sans-serif;
+  --font-heading: 'Montserrat', sans-serif;
 
   /* Global Radius */
   --radius: 0.25rem;
 
   /* Light Mode - Gruvbox Light */
-  --background: #f9f5d7;
+  --background: #f9e5d7;
   --foreground: #1c1b19;
-  --card: #ebdbb2;
+  --card: #ededed;
   --card-foreground: #1c1b19;
   --popover: #f9f5d7;
   --popover-foreground: #1c1b19;
-  --primary: #af3a03;
+  --primary: #0f6621;
   --primary-foreground: #fbf1c7;
-  --secondary: #d5c4a1;
+  --secondary: #ffffff;
   --secondary-foreground: #1c1b19;
   --muted: #a89984;
   --muted-foreground: #7c6f64;
@@ -31,39 +31,39 @@
   --destructive-foreground: #fbf1c7;
   --border: #d5c4a1;
   --input: #ebdbb2;
-  --ring: #af3a03;
+  --ring: #0f6621;
   
   --sidebar: #f2e5bc;
   --sidebar-foreground: #1c1b19;
-  --sidebar-primary: #af3a03;
+  --sidebar-primary: #0f6621;
   --sidebar-primary-foreground: #fbf1c7;
   --sidebar-accent: #d5c4a1;
   --sidebar-accent-foreground: #1c1b19;
   --sidebar-border: #d5c4a1;
-  --sidebar-ring: #af3a03;
+  --sidebar-ring: #0f6621;
 }
 
 /* Dark Mode - Gruvbox Inspired */
 .dark {
-  --background: #141311;
+  --background: #000000;
   --foreground: #fbf1c7;
-  --card: #1e1d1b;
+  --card: #030302;
   --card-foreground: #fbf1c7;
   --popover: #141311;
   --popover-foreground: #fbf1c7;
-  --primary: #a6a922;
+  --primary: #5a1787;
   --primary-foreground: #141311;
-  --secondary: #32302f;
+  --secondary: #ffffff;
   --secondary-foreground: #fbf1c7;
   --muted: #3c3836;
   --muted-foreground: #bdae93;
-  --accent: #fe8019;
+  --accent: #ffffff;
   --accent-foreground: #141311;
   --destructive: #fb4934;
   --destructive-foreground: #141311;
   --border: #32302f;
   --input: #1e1d1b;
-  --ring: #a6a922;
+  --ring: #5a1787;
   
   --chart-1: #a6a922;
   --chart-2: #8ec07c;
@@ -73,10 +73,10 @@
   
   --sidebar: #141311;
   --sidebar-foreground: #fbf1c7;
-  --sidebar-primary: #a6a922;
+  --sidebar-primary: #5a1787;
   --sidebar-primary-foreground: #141311;
   --sidebar-accent: #32302f;
   --sidebar-accent-foreground: #fbf1c7;
   --sidebar-border: #32302f;
-  --sidebar-ring: #a6a922;
+  --sidebar-ring: #5a1787;
 }

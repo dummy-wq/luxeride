@@ -58,7 +58,7 @@ export function Hero() {
 
             <div className="flex flex-wrap gap-4 pt-4">
               <Link href="/cars">
-                <Button className="rounded-none px-8 py-7 bg-foreground text-background hover:bg-foreground/90 text-sm font-bold tracking-widest uppercase transition-all hover:gap-4 group">
+                <Button className="rounded-none px-8 py-7 bg-primary text-primary-foreground hover:bg-primary/90 text-sm font-bold tracking-widest uppercase transition-all hover:gap-4 group border-none">
                   {siteConfig.hero.ctaLabel} <ArrowRight className="w-4 h-4 transition-all group-hover:translate-x-1" />
                 </Button>
               </Link>

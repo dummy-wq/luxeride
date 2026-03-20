@@ -148,9 +148,9 @@ export function Navigation() {
               <>
                 {isShoppingMode ? (
                   <Button
-                    variant="outline"
+                    variant="ghost"
                     size="icon"
-                    className="text-foreground relative"
+                    className="text-primary hover:bg-primary/10 relative"
                     title={siteConfig.taxonomy.cartLabel}
                     asChild
                   >
@@ -165,9 +165,9 @@ export function Navigation() {
                   </Button>
                 ) : (
                   <Button
-                    variant="outline"
+                    variant="ghost"
                     size="icon"
-                    className="text-foreground"
+                    className="text-primary hover:bg-primary/10"
                     title={siteConfig.taxonomy.ordersLabel}
                     asChild
                   >
@@ -177,9 +177,9 @@ export function Navigation() {
                   </Button>
                 )}
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   size="icon"
-                  className="text-foreground"
+                  className="text-primary hover:bg-primary/10"
                   title="Profile"
                   asChild
                 >
@@ -191,7 +191,7 @@ export function Navigation() {
                   <Button
                     variant="ghost"
                     onClick={handleLogout}
-                    className="text-foreground"
+                    className="text-primary hover:bg-primary/10"
                   >
                     Logout
                   </Button>
@@ -246,7 +246,7 @@ export function Navigation() {
                 key={link.href}
                 href={link.href}
                 onClick={() => setIsOpen(false)}
-                className="block w-full text-left px-2 py-2 text-foreground hover:text-primary hover:bg-secondary rounded transition-colors"
+                className="block w-full text-left px-2 py-2 text-foreground hover:text-primary hover:bg-primary/10 rounded transition-colors"
               >
                 {link.label}
               </Link>
@@ -302,7 +302,7 @@ export function Navigation() {
                   <Button
                     onClick={handleLogout}
                     variant="ghost"
-                    className="w-full text-foreground"
+                    className="w-full text-primary hover:bg-primary/10"
                   >
                     Logout
                   </Button>

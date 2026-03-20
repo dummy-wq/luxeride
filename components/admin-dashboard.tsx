@@ -24,6 +24,7 @@ import {
     Type,
     Layers,
     ExternalLink,
+    Loader2,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -121,10 +122,117 @@ function CustomisePanel() {
 
     // Live values (cosmetic only – script generates the real output)
     const [lightPrimary, setLightPrimary] = useState("#af3a03");
-    const [lightBg,      setLightBg]      = useState("#f9f5d7");
+    const [lightBg,      setLightBg]      = useState("#fdfdfc");
+    const [lightCard,    setLightCard]    = useState("#ffffff");
+    const [lightSecondary, setLightSecondary] = useState("#f5f5f4");
+    const [lightAccent,  setLightAccent]  = useState("#427b58");
+
     const [darkPrimary,  setDarkPrimary]  = useState("#a6a922");
-    const [darkBg,       setDarkBg]       = useState("#141311");
+    const [darkBg,       setDarkBg]       = useState("#1c1917");
+    const [darkCard,     setDarkCard]     = useState("#292524");
+    const [darkSecondary, setDarkSecondary] = useState("#44403c");
+    const [darkAccent,   setDarkAccent]   = useState("#fe8019");
+
     const [selectedFont, setSelectedFont] = useState(0);
+    const [isApplying, setIsApplying] = useState(false);
+
+    // Fetch actual theme on mount
+    useEffect(() => {
+        fetch('/api/admin/theme')
+            .then(res => res.json())
+            .then(data => {
+                if (data.theme) {
+                    if (data.theme.lightPrimary) setLightPrimary(data.theme.lightPrimary);
+                    if (data.theme.lightBg) setLightBg(data.theme.lightBg);
+                    if (data.theme.lightCard) setLightCard(data.theme.lightCard);
+                    if (data.theme.lightSecondary) setLightSecondary(data.theme.lightSecondary);
+                    if (data.theme.lightAccent) setLightAccent(data.theme.lightAccent);
+
+                    if (data.theme.darkPrimary) setDarkPrimary(data.theme.darkPrimary);
+                    if (data.theme.darkBg) setDarkBg(data.theme.darkBg);
+                    if (data.theme.darkCard) setDarkCard(data.theme.darkCard);
+                    if (data.theme.darkSecondary) setDarkSecondary(data.theme.darkSecondary);
+                    if (data.theme.darkAccent) setDarkAccent(data.theme.darkAccent);
+                    
+                    const hdFont = data.theme.headingFont;
+                    if (hdFont) {
+                        const match = FONT_PAIRS.findIndex(f => f.heading === hdFont || f.heading.includes(hdFont.replace(/['"]/g, '')));
+                        if (match !== -1) setSelectedFont(match);
+                    }
+                }
+            })
+            .catch(console.error);
+    }, []);
+
+    const handleApplyLive = async () => {
+        setIsApplying(true);
+        try {
+            const fp = FONT_PAIRS[selectedFont];
+            const response = await fetch('/api/admin/theme', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    lightPrimary, lightBg, lightCard, lightSecondary, lightAccent,
+                    darkPrimary, darkBg, darkCard, darkSecondary, darkAccent,
+                    headingFont: fp.heading, bodyFont: fp.body
+                })
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error || "Failed to apply theme");
+            toast({ title: "Theme Applied!", description: "The theme has been successfully updated on disk. Please hard-refresh your browser." });
+        } catch (error: any) {
+            toast({ title: "Failed to apply", description: error.message, variant: "destructive" });
+        } finally {
+            setIsApplying(false);
+        }
+    };
+
+    const [isRestoring, setIsRestoring] = useState(false);
+
+    const handleRestoreDefault = async () => {
+        setIsRestoring(true);
+        try {
+            const defaults = {
+                lightPrimary: "#af3a03",
+                lightBg: "#f9f5d7",
+                lightCard: "#ffffff",
+                lightSecondary: "#fdf8ee",
+                lightAccent: "#427b58",
+                darkPrimary: "#a6a922",
+                darkBg: "#141311",
+                darkCard: "#1f1d18",
+                darkSecondary: "#292620",
+                darkAccent: "#fe8019",
+                headingFont: "'Montserrat', sans-serif",
+                bodyFont: "'Inter', sans-serif"
+            };
+            
+            setLightPrimary(defaults.lightPrimary);
+            setLightBg(defaults.lightBg);
+            setLightCard(defaults.lightCard);
+            setLightSecondary(defaults.lightSecondary);
+            setLightAccent(defaults.lightAccent);
+            setDarkPrimary(defaults.darkPrimary);
+            setDarkBg(defaults.darkBg);
+            setDarkCard(defaults.darkCard);
+            setDarkSecondary(defaults.darkSecondary);
+            setDarkAccent(defaults.darkAccent);
+            setSelectedFont(0);
+
+            const response = await fetch('/api/admin/theme', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(defaults)
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error || "Failed to restore theme");
+            toast({ title: "Defaults Restored!", description: "The original LuxeRide theme has been restored. Please hard-refresh." });
+        } catch (error: any) {
+            toast({ title: "Failed to restore", description: error.message, variant: "destructive" });
+        } finally {
+            setIsRestoring(false);
+        }
+    };
 
     const handleCopy = useCallback(async (content: string, fileName: string) => {
         await navigator.clipboard.writeText(content);
@@ -187,6 +295,27 @@ function CustomisePanel() {
                             {swatch(lightBg)}
                             <span className="font-mono text-xs text-muted-foreground">{lightBg}</span>
                         </label>
+                        <label className="flex items-center gap-3 text-sm text-foreground">
+                            <span className="w-28 text-muted-foreground">Card</span>
+                            <input type="color" value={lightCard} onChange={(e) => setLightCard(e.target.value)}
+                                className="w-9 h-9 rounded-lg border border-border cursor-pointer bg-transparent p-0.5" />
+                            {swatch(lightCard)}
+                            <span className="font-mono text-xs text-muted-foreground">{lightCard}</span>
+                        </label>
+                        <label className="flex items-center gap-3 text-sm text-foreground">
+                            <span className="w-28 text-muted-foreground">Secondary</span>
+                            <input type="color" value={lightSecondary} onChange={(e) => setLightSecondary(e.target.value)}
+                                className="w-9 h-9 rounded-lg border border-border cursor-pointer bg-transparent p-0.5" />
+                            {swatch(lightSecondary)}
+                            <span className="font-mono text-xs text-muted-foreground">{lightSecondary}</span>
+                        </label>
+                        <label className="flex items-center gap-3 text-sm text-foreground">
+                            <span className="w-28 text-muted-foreground">Accent</span>
+                            <input type="color" value={lightAccent} onChange={(e) => setLightAccent(e.target.value)}
+                                className="w-9 h-9 rounded-lg border border-border cursor-pointer bg-transparent p-0.5" />
+                            {swatch(lightAccent)}
+                            <span className="font-mono text-xs text-muted-foreground">{lightAccent}</span>
+                        </label>
                     </div>
 
                     {/* Dark Mode */}
@@ -205,6 +334,27 @@ function CustomisePanel() {
                                 className="w-9 h-9 rounded-lg border border-border cursor-pointer bg-transparent p-0.5" />
                             {swatch(darkBg)}
                             <span className="font-mono text-xs text-muted-foreground">{darkBg}</span>
+                        </label>
+                        <label className="flex items-center gap-3 text-sm text-foreground">
+                            <span className="w-28 text-muted-foreground">Card</span>
+                            <input type="color" value={darkCard} onChange={(e) => setDarkCard(e.target.value)}
+                                className="w-9 h-9 rounded-lg border border-border cursor-pointer bg-transparent p-0.5" />
+                            {swatch(darkCard)}
+                            <span className="font-mono text-xs text-muted-foreground">{darkCard}</span>
+                        </label>
+                        <label className="flex items-center gap-3 text-sm text-foreground">
+                            <span className="w-28 text-muted-foreground">Secondary</span>
+                            <input type="color" value={darkSecondary} onChange={(e) => setDarkSecondary(e.target.value)}
+                                className="w-9 h-9 rounded-lg border border-border cursor-pointer bg-transparent p-0.5" />
+                            {swatch(darkSecondary)}
+                            <span className="font-mono text-xs text-muted-foreground">{darkSecondary}</span>
+                        </label>
+                        <label className="flex items-center gap-3 text-sm text-foreground">
+                            <span className="w-28 text-muted-foreground">Accent</span>
+                            <input type="color" value={darkAccent} onChange={(e) => setDarkAccent(e.target.value)}
+                                className="w-9 h-9 rounded-lg border border-border cursor-pointer bg-transparent p-0.5" />
+                            {swatch(darkAccent)}
+                            <span className="font-mono text-xs text-muted-foreground">{darkAccent}</span>
                         </label>
                     </div>
                 </div>
@@ -242,6 +392,38 @@ function CustomisePanel() {
                             </p>
                         </button>
                     ))}
+                </div>
+            </Card>
+
+            {/* Direct Apply */}
+            <Card className="p-6 bg-primary/5 border border-primary/20 shadow-md rounded-2xl flex flex-col sm:flex-row gap-6 items-center justify-between">
+                <div>
+                    <h2 className="font-black text-foreground tracking-tight text-lg flex items-center gap-2">
+                        <Check className="w-5 h-5 text-primary" />
+                        Apply Live to Website
+                    </h2>
+                    <p className="text-xs text-muted-foreground mt-1 max-w-lg">
+                        Instead of downloading a script, click below to directly save and inject the customized theme and typography into your website's CSS. This works perfectly when running the template locally.
+                    </p>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                    <Button 
+                        onClick={handleRestoreDefault} 
+                        disabled={isApplying || isRestoring} 
+                        size="lg" 
+                        variant="outline"
+                        className="font-bold rounded-xl"
+                    >
+                        {isRestoring ? <><Loader2 className="w-5 h-5 mr-2 animate-spin" /> Restoring...</> : "Restore Default"}
+                    </Button>
+                    <Button 
+                        onClick={handleApplyLive} 
+                        disabled={isApplying || isRestoring} 
+                        size="lg" 
+                        className="font-bold bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl shadow-lg shadow-primary/20"
+                    >
+                        {isApplying ? <><Loader2 className="w-5 h-5 mr-2 animate-spin" /> Saving...</> : "Save & Apply Locally"}
+                    </Button>
                 </div>
             </Card>
 
