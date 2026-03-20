@@ -4,18 +4,21 @@ import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useTheme } from "next-themes";
-import { Moon, Sun, Menu, X, User, CalendarDays } from "lucide-react";
+import { Moon, Sun, Menu, X, User, CalendarDays, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 
 import { useAuth } from "@/lib/context/auth-context";
+import { useCart } from "@/lib/context/cart-context";
 import { siteConfig } from "@/template/config";
 
 export function Navigation() {
   const { theme, setTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
   const { user, logout } = useAuth();
+  const { totalItems } = useCart();
   const pathname = usePathname();
+  const isShoppingMode = siteConfig.template.mode === "shopping";
 
   const handleLogout = async () => {
     await logout();
@@ -143,17 +146,36 @@ export function Navigation() {
             </Button>
             {user ? (
               <>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="text-foreground"
-                  title={siteConfig.taxonomy.ordersLabel}
-                  asChild
-                >
-                  <Link href="/bookings">
-                    <CalendarDays className="w-5 h-5" />
-                  </Link>
-                </Button>
+                {isShoppingMode ? (
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="text-foreground relative"
+                    title={siteConfig.taxonomy.cartLabel}
+                    asChild
+                  >
+                    <Link href="/cart">
+                      <ShoppingCart className="w-5 h-5" />
+                      {totalItems > 0 && (
+                        <span className="absolute -top-1.5 -right-1.5 bg-primary text-primary-foreground text-[10px] font-black rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
+                          {totalItems > 99 ? "99+" : totalItems}
+                        </span>
+                      )}
+                    </Link>
+                  </Button>
+                ) : (
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="text-foreground"
+                    title={siteConfig.taxonomy.ordersLabel}
+                    asChild
+                  >
+                    <Link href="/bookings">
+                      <CalendarDays className="w-5 h-5" />
+                    </Link>
+                  </Button>
+                )}
                 <Button
                   variant="outline"
                   size="icon"
@@ -241,15 +263,33 @@ export function Navigation() {
             <div className="pt-2 space-y-2">
               {user ? (
                 <>
-                  <Button
-                    variant="outline"
-                    className="w-full flex items-center justify-center gap-2"
-                    asChild
-                  >
-                    <Link href="/bookings" onClick={() => setIsOpen(false)}>
-                      <CalendarDays className="w-4 h-4" /> {siteConfig.taxonomy.ordersLabel}
-                    </Link>
-                  </Button>
+                  {isShoppingMode ? (
+                    <Button
+                      variant="outline"
+                      className="w-full flex items-center justify-center gap-2 relative"
+                      asChild
+                    >
+                      <Link href="/cart" onClick={() => setIsOpen(false)}>
+                        <ShoppingCart className="w-4 h-4" />
+                        {siteConfig.taxonomy.cartLabel}
+                        {totalItems > 0 && (
+                          <span className="ml-1 bg-primary text-primary-foreground text-[10px] font-black rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
+                            {totalItems > 99 ? "99+" : totalItems}
+                          </span>
+                        )}
+                      </Link>
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="outline"
+                      className="w-full flex items-center justify-center gap-2"
+                      asChild
+                    >
+                      <Link href="/bookings" onClick={() => setIsOpen(false)}>
+                        <CalendarDays className="w-4 h-4" /> {siteConfig.taxonomy.ordersLabel}
+                      </Link>
+                    </Button>
+                  )}
                   <Button
                     variant="outline"
                     className="w-full flex items-center justify-center gap-2"

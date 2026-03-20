@@ -27,9 +27,15 @@ export const siteConfig = {
   // ── Template Setting ──────────────────────────────────
   // Change "service" to "shopping" to switch the layout/logic from a rental service to an e-commerce store.
   template: {
-    mode: "service" as "service" | "shopping",
+    mode: "shopping" as "service" | "shopping",
     showAvailability: true, // Shows "Available", "Booked" etc on cards
     enableBooking: true,   // If false, replaces booking with direct purchase/contact
+    // Shopping mode: quantity picker config
+    quantity: {
+      min: 1,
+      max: 99,
+      default: 1,
+    },
   },
 
   // ── Taxonomy & Copy ────────────────────────────────────
@@ -39,11 +45,13 @@ export const siteConfig = {
     itemLabelPlural: "Cars",
     categoryLabel: "Vehicle Type",
     actionLabel: "Book Now", // Global CTA text
+    addToCartLabel: "Add to Cart", // Shopping mode CTA
     priceSuffix: "/hr",      // Text after price (e.g., "/day", "/each", or empty "")
     catalogHeading: "Our Fleet",
     catalogSubheading: "Handpicked premium vehicles for your next journey.",
     reservationRequiredLabel: "Reservation Required",
     ordersLabel: "Bookings", // "Orders" for shopping
+    cartLabel: "Cart",       // Shopping cart label shown in nav
   },
 
   // ── Metadata & Icon Mapping ────────────────────────────

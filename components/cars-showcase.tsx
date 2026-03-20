@@ -32,6 +32,8 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/context/auth-context";
 import { siteConfig } from "@/template/config";
 import { formatPrice } from "@/lib/utils";
+import { useCart } from "@/lib/context/cart-context";
+import { ShoppingCart, CheckCircle } from "lucide-react";
 
 // Icon mapping for dynamic specs
 const IconMap: Record<string, any> = {
@@ -53,6 +55,10 @@ export function CarsShowcase() {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCarId, setSelectedCarId] = useState<string | null>(null);
   const [carsList, setCarsList] = useState<any[]>([]);
+  const { addItem, isInCart, getQuantity, updateQuantity } = useCart();
+  const quantityCfg = siteConfig.template.quantity;
+  const [selectedQty, setSelectedQty] = useState<number>(quantityCfg.default);
+  const isShoppingMode = siteConfig.template.mode === "shopping";
 
   // Fetch cars from API
   useEffect(() => {
@@ -214,6 +220,8 @@ export function CarsShowcase() {
   // Handle URL syncing for incremental navigation
   const openCarDetail = (carId: string | null) => {
     setSelectedCarId(carId);
+    if (carId) setSelectedQty(quantityCfg.default);
+    
     const url = new URL(window.location.href);
     if (carId) {
       url.searchParams.set("car", carId);
@@ -462,35 +470,152 @@ export function CarsShowcase() {
                   )}
                 </div>
 
-                {/* ── Booking Sidebar ── */}
+
+                {/* ── Sidebar (Booking/Cart) ── */}
                 <div className="lg:col-span-1">
                   <div className="sticky top-24">
-                    <Card className="p-6 bg-card border-border space-y-6">
-                      <h3 className="text-xl font-bold text-foreground">Quick Summary</h3>
-
-                      <div className="space-y-2">
-                        <p className="text-sm text-muted-foreground">Starting from</p>
-                        <div className="flex items-baseline gap-2">
-                          <span className="text-4xl font-bold text-primary">
-                            {formatPrice(selectedCar.price)}
-                          </span>
-                          <span className="text-sm text-muted-foreground">{siteConfig.taxonomy.priceSuffix}</span>
+                    {isShoppingMode ? (
+                      <Card className="p-6 bg-card border-border space-y-6">
+                        <div className="flex justify-between items-center">
+                          <h3 className="text-xl font-bold">Order Summary</h3>
                         </div>
-                      </div>
 
-                      <div className="text-xs text-muted-foreground space-y-1">
-                        <p>✓ {siteConfig.booking.freeCancellation}</p>
-                        <p>✓ {siteConfig.booking.support}</p>
-                        <p>✓ {siteConfig.booking.insurance}</p>
-                      </div>
+                        <div className="space-y-1">
+                          <p className="text-sm text-muted-foreground">Unit Price</p>
+                          <div className="flex items-baseline gap-2">
+                            <span className="text-4xl font-bold text-primary">
+                              {formatPrice(selectedCar.price)}
+                            </span>
+                            <span className="text-sm text-muted-foreground">{siteConfig.taxonomy.priceSuffix}</span>
+                          </div>
+                        </div>
 
-                      <Button
-                        onClick={() => router.push(`/cars/${selectedCarId}`)}
-                        className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6 font-semibold text-lg transition-all active:scale-[0.98]"
-                      >
-                        {siteConfig.taxonomy.actionLabel}
-                      </Button>
-                    </Card>
+                        {/* Quantity Picker */}
+                        <div className="space-y-2">
+                          <label className="text-sm font-semibold text-foreground block">
+                            Quantity
+                          </label>
+                          {isInCart(selectedCarId!) ? (
+                            <div className="flex items-center gap-3">
+                              <button
+                                onClick={() => {
+                                  const newQty = getQuantity(selectedCarId!) - 1;
+                                  if (newQty < 1) return;
+                                  updateQuantity(selectedCarId!, newQty);
+                                }}
+                                disabled={getQuantity(selectedCarId!) <= quantityCfg.min}
+                                className="w-10 h-10 rounded-lg border border-border bg-secondary hover:bg-muted flex items-center justify-center text-lg font-bold disabled:opacity-40 transition-colors"
+                              >
+                                −
+                              </button>
+                              <span className="text-xl font-bold text-foreground w-8 text-center">
+                                {getQuantity(selectedCarId!)}
+                              </span>
+                              <button
+                                onClick={() => {
+                                  const newQty = getQuantity(selectedCarId!) + 1;
+                                  if (newQty > quantityCfg.max) return;
+                                  updateQuantity(selectedCarId!, newQty);
+                                }}
+                                disabled={getQuantity(selectedCarId!) >= quantityCfg.max}
+                                className="w-10 h-10 rounded-lg border border-border bg-secondary hover:bg-muted flex items-center justify-center text-lg font-bold disabled:opacity-40 transition-colors"
+                              >
+                                +
+                              </button>
+                            </div>
+                          ) : (
+                            <select
+                              value={selectedQty}
+                              onChange={(e) => setSelectedQty(Number(e.target.value))}
+                              className="w-full px-3 py-2.5 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm font-medium"
+                            >
+                              {Array.from(
+                                { length: quantityCfg.max - quantityCfg.min + 1 },
+                                (_, i) => quantityCfg.min + i
+                              ).map((qty) => (
+                                <option key={qty} value={qty}>{qty}</option>
+                              ))}
+                            </select>
+                          )}
+                        </div>
+
+                        <div className="pt-4 border-t border-border space-y-2">
+                          <div className="flex justify-between text-sm">
+                            <span className="text-muted-foreground">
+                              {isInCart(selectedCarId!) ? getQuantity(selectedCarId!) : selectedQty} × {formatPrice(selectedCar.price)}
+                            </span>
+                            <span className="font-semibold text-foreground">
+                              {formatPrice(selectedCar.price * (isInCart(selectedCarId!) ? getQuantity(selectedCarId!) : selectedQty))}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="space-y-3">
+                          {isInCart(selectedCarId!) ? (
+                            <Button
+                              onClick={() => router.push("/cart")}
+                              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6 font-semibold text-lg flex items-center gap-2"
+                            >
+                              <ShoppingCart className="w-5 h-5" />
+                              View Cart
+                            </Button>
+                          ) : (
+                            <Button
+                              onClick={() => {
+                                addItem({
+                                  id: String(selectedCarId),
+                                  name: selectedCar.name,
+                                  image: selectedCar.image,
+                                  price: selectedCar.price,
+                                  priceDisplay: formatPrice(selectedCar.price),
+                                  priceSuffix: siteConfig.taxonomy.priceSuffix,
+                                  category: selectedCar.category,
+                                }, selectedQty);
+                                // Optional toast
+                              }}
+                              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6 font-semibold text-lg flex items-center gap-2"
+                            >
+                              <ShoppingCart className="w-5 h-5" />
+                              {siteConfig.taxonomy.addToCartLabel}
+                            </Button>
+                          )}
+                          <Button
+                            variant="outline"
+                            onClick={() => router.push(`/cars/${selectedCarId}`)}
+                            className="w-full py-4 font-semibold"
+                          >
+                            Full Product Page
+                          </Button>
+                        </div>
+                      </Card>
+                    ) : (
+                      <Card className="p-6 bg-card border-border space-y-6">
+                        <h3 className="text-xl font-bold text-foreground">Quick Summary</h3>
+
+                        <div className="space-y-2">
+                          <p className="text-sm text-muted-foreground">Starting from</p>
+                          <div className="flex items-baseline gap-2">
+                            <span className="text-4xl font-bold text-primary">
+                              {formatPrice(selectedCar.price)}
+                            </span>
+                            <span className="text-sm text-muted-foreground">{siteConfig.taxonomy.priceSuffix}</span>
+                          </div>
+                        </div>
+
+                        <div className="text-xs text-muted-foreground space-y-1">
+                          <p>✓ {siteConfig.booking.freeCancellation}</p>
+                          <p>✓ {siteConfig.booking.support}</p>
+                          <p>✓ {siteConfig.booking.insurance}</p>
+                        </div>
+
+                        <Button
+                          onClick={() => router.push(`/cars/${selectedCarId}`)}
+                          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6 font-semibold text-lg transition-all active:scale-[0.98]"
+                        >
+                          {siteConfig.taxonomy.actionLabel}
+                        </Button>
+                      </Card>
+                    )}
                   </div>
                 </div>
               </div>
@@ -615,7 +740,7 @@ export function CarsShowcase() {
                               <div className="pt-2 border-t border-border">
                                 <div className="flex items-baseline gap-2">
                                   <span className="text-2xl font-bold text-primary">
-                                    {car.price}
+                                    {formatPrice(car.price)}
                                   </span>
                                   <span className="text-sm text-muted-foreground">
                                     {siteConfig.taxonomy.priceSuffix}
@@ -624,27 +749,65 @@ export function CarsShowcase() {
                               </div>
 
                               {/* CTA */}
-                              {hasDetail && !shaded ? (
-                                <Button
-                                  onClick={() =>
-                                    openCarDetail(String(car.id))
-                                  }
-                                  className="w-full bg-primary hover:bg-primary/90 text-primary-foreground transition-all"
-                                >
-                                  View Details
-                                </Button>
-                              ) : (
-                                <Button
-                                  disabled={shaded || !hasDetail}
-                                  className={`w-full transition-all ${
-                                    shaded || !hasDetail
-                                      ? "bg-muted text-muted-foreground cursor-not-allowed"
-                                      : "bg-primary hover:bg-primary/90 text-primary-foreground"
-                                  }`}
-                                >
-                                  {shaded ? "Unavailable" : "View Details"}
-                                </Button>
-                              )}
+                              <div className="flex flex-col gap-2">
+                                {isShoppingMode && !shaded ? (
+                                  <>
+                                    {isInCart(carId) ? (
+                                      <Button
+                                        onClick={() => router.push("/cart")}
+                                        className="w-full bg-secondary border border-primary/20 text-primary hover:bg-secondary/80 transition-all font-bold flex items-center justify-center gap-2"
+                                      >
+                                        <ShoppingCart className="w-4 h-4" />
+                                        In {siteConfig.taxonomy.cartLabel}
+                                      </Button>
+                                    ) : (
+                                      <Button
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          addItem({
+                                            id: carId,
+                                            name: car.name,
+                                            image: car.image,
+                                            price: car.price,
+                                            priceDisplay: formatPrice(car.price),
+                                            priceSuffix: siteConfig.taxonomy.priceSuffix,
+                                            category: car.category,
+                                          }, quantityCfg.default);
+                                        }}
+                                        className="w-full bg-primary hover:bg-primary/90 text-primary-foreground transition-all font-bold flex items-center justify-center gap-2"
+                                      >
+                                        <ShoppingCart className="w-4 h-4" />
+                                        {siteConfig.taxonomy.addToCartLabel}
+                                      </Button>
+                                    )}
+                                    <Button
+                                      variant="outline"
+                                      onClick={() => openCarDetail(carId)}
+                                      className="w-full text-xs py-1 h-8 opacity-70 hover:opacity-100"
+                                    >
+                                      Details
+                                    </Button>
+                                  </>
+                                ) : hasDetail && !shaded ? (
+                                  <Button
+                                    onClick={() => openCarDetail(carId)}
+                                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground transition-all"
+                                  >
+                                    {siteConfig.taxonomy.actionLabel}
+                                  </Button>
+                                ) : (
+                                  <Button
+                                    disabled={shaded || !hasDetail}
+                                    className={`w-full transition-all ${
+                                      shaded || !hasDetail
+                                        ? "bg-muted text-muted-foreground cursor-not-allowed"
+                                        : "bg-primary hover:bg-primary/90 text-primary-foreground"
+                                    }`}
+                                  >
+                                    {shaded ? "Unavailable" : siteConfig.taxonomy.actionLabel}
+                                  </Button>
+                                )}
+                              </div>
                             </div>
                           </Card>
                         </motion.div>

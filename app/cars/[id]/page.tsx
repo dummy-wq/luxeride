@@ -47,6 +47,8 @@ import { INDIAN_CITIES } from "@/lib/constants";
 import { useToast } from "@/hooks/use-toast";
 
 import { carsDatabase } from "@/template/catalog";
+import { useCart } from "@/lib/context/cart-context";
+import { ShoppingCart, CheckCircle } from "lucide-react";
 
 export default function CarDetailPage() {
   const router = useRouter();
@@ -55,6 +57,8 @@ export default function CarDetailPage() {
   const id = params.id as string;
   const car =
     carsDatabase[id as keyof typeof carsDatabase] || carsDatabase["1"];
+  const isShoppingMode = siteConfig.template.mode === "shopping";
+  const { addItem, isInCart, getQuantity, updateQuantity } = useCart();
   const [bookingType, setBookingType] = useState<"hourly" | "subscription">(
     "hourly",
   );
@@ -75,6 +79,11 @@ export default function CarDetailPage() {
     "idle" | "success" | "error" | string
   >("idle");
 
+  // Shopping mode: quantity picker state
+  const quantityCfg = siteConfig.template.quantity;
+  const [selectedQty, setSelectedQty] = useState<number>(quantityCfg.default);
+  const [cartAdded, setCartAdded] = useState(false);
+
   const defaultCost =
     bookingType === "hourly"
       ? car.price * hours
@@ -91,6 +100,11 @@ export default function CarDetailPage() {
       if (user.licenseNumber && !licenseNumber) setLicenseNumber(user.licenseNumber);
     }
   }, [user]);
+
+  // Sync cart added state when returning to page
+  useEffect(() => {
+    if (isInCart(id)) setCartAdded(true);
+  }, [id, isInCart]);
 
 
 
@@ -403,251 +417,394 @@ export default function CarDetailPage() {
             </div>
             <div className="lg:col-span-1">
               <div className="sticky top-24 space-y-6">
-                <Card className="p-6 bg-gradient-to-b from-card to-card border-border space-y-6">
-                  <div className="flex justify-between items-center bg-card">
-                    <h3 className="text-xl font-bold">Booking Summary</h3>
-                    <button
-                      onClick={() => setIsFavorite(!isFavorite)}
-                      className="p-2 bg-background/50 rounded-full hover:bg-secondary transition-colors"
-                    >
-                      <Heart
-                        className={`w-5 h-5 ${isFavorite ? "fill-red-500 text-red-500" : "text-muted-foreground"}`}
-                      />
-                    </button>
-                  </div>
-                  {/* User Context */}
-                  {user && (
-                    <div className="p-3 bg-primary/5 rounded-lg border border-primary/20 space-y-1">
-                      <p className="text-xs text-muted-foreground font-semibold uppercase">
-                        Booking as
-                      </p>
-                      <p className="text-sm font-bold text-foreground">
-                        {user.fullName}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {user.email}
-                      </p>
-                    </div>
-                  )}
 
-                  <div className="space-y-2">
-                    <p className="text-sm text-muted-foreground">Price</p>
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-4xl font-bold text-primary">
-                        {formatPrice(car.price)}
-                      </span>
-                      <span className="text-sm text-muted-foreground">{siteConfig.taxonomy.priceSuffix}</span>
-                    </div>
-                  </div>
-
-                  {/* Booking/Purchase Logic */}
-                  {siteConfig.template.mode === "service" ? (
-                    <>
-                      {/* Booking Type */}
-                      <div className="flex bg-secondary rounded-lg p-1">
-                        <button
-                          onClick={() => setBookingType("hourly")}
-                          className={`flex-1 py-2 text-sm font-semibold rounded-md transition-all ${bookingType === "hourly" ? "bg-background text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
-                        >
-                          Short Term
-                        </button>
-                        <button
-                          onClick={() => setBookingType("subscription")}
-                          className={`flex-1 py-2 text-sm font-semibold rounded-md transition-all ${bookingType === "subscription" ? "bg-background text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
-                        >
-                          Long Term
-                        </button>
-                      </div>
-
-                      {/* Selection */}
-                      <div className="space-y-4">
-                        {bookingType === "hourly" ? (
-                          <div>
-                            <label className="text-sm font-semibold text-foreground mb-2 block">
-                              Hours
-                            </label>
-                            <input
-                              type="number"
-                              min="1"
-                              value={hours}
-                              onChange={(e) => setHours(Number(e.target.value))}
-                              className="w-full px-3 py-2 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
-                            />
-                          </div>
-                        ) : (
-                          <div>
-                            <label className="text-sm font-semibold text-foreground mb-2 block">
-                              Duration (Days)
-                            </label>
-                            <input
-                              type="number"
-                              min="7"
-                              value={subscriptionDays}
-                              onChange={(e) =>
-                                setSubscriptionDays(
-                                  Math.max(7, Number(e.target.value)),
-                                )
-                              }
-                              className="w-full px-3 py-2 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
-                            />
-                          </div>
-                        )}
-                      </div>
-                    </>
-                  ) : (
-                    <div className="space-y-4">
-                      <p className="text-sm text-muted-foreground">
-                        Ready to purchase? Click below to proceed to checkout.
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Shared Details: City & Address */}
-                  <div className="space-y-4 pt-4 border-t border-border">
-                    <div>
-                      <label className="text-sm font-semibold text-foreground mb-2 block flex items-center gap-1">
-                        <MapPin className="w-3 h-3 text-primary" /> Delivery City
-                      </label>
-                      <select
-                        value={selectedCity}
-                        onChange={(e) => setSelectedCity(e.target.value)}
-                        className="w-full px-3 py-2 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
-                      >
-                        {INDIAN_CITIES.map(city => (
-                          <option key={city} value={city}>{city}</option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="text-sm font-semibold text-foreground mb-2 block">
-                        Delivery Address
-                      </label>
-                      <textarea
-                        placeholder="Street name, landmark, etc."
-                        value={address}
-                        onChange={(e) => setAddress(e.target.value)}
-                        rows={2}
-                        className="w-full px-3 py-2 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Pricing Summary */}
-                  <div className="space-y-2 pt-4 border-t border-border">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">
-                        {bookingType === "hourly"
-                          ? `${hours} hours`
-                          : `${subscriptionDays} days`}
-                      </span>
-                      <span className="font-semibold text-foreground">
-                        {formatPrice(defaultCost)}
-                      </span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">
-                        Taxes & Fees (18%)
-                      </span>
-                      <span className="font-semibold text-foreground">
-                        {formatPrice(tax)}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Total */}
-                  <div className="pt-4 border-t border-border space-y-4">
+                {/* ── SHOPPING MODE SIDEBAR ── */}
+                {isShoppingMode ? (
+                  <Card className="p-6 bg-gradient-to-b from-card to-card border-border space-y-6">
                     <div className="flex justify-between items-center">
-                      <span className="font-bold text-foreground">Total</span>
-                      <span className="text-2xl font-bold text-primary">
-                        {formatPrice(totalCost)}
-                      </span>
-                    </div>
-
-                    {/* CTA */}
-                    <div className="space-y-3">
-                      <Button
-                        onClick={handleBookNow}
-                        disabled={isBooking || bookingStatus === "success"}
-                        className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6 font-semibold text-lg transition-all active:scale-[0.98] relative overflow-hidden"
+                      <h3 className="text-xl font-bold">Order Summary</h3>
+                      <button
+                        onClick={() => setIsFavorite(!isFavorite)}
+                        className="p-2 bg-background/50 rounded-full hover:bg-secondary transition-colors"
                       >
-                        {isVerifying ? (
-                          <span className="flex items-center gap-2">
-                            <Loader2 className="w-5 h-5 animate-spin" />
-                            Verifying...
-                          </span>
-                        ) : isBooking ? (
-                          <span className="flex items-center gap-2">
-                            <Loader2 className="w-5 h-5 animate-spin" />
-                            {isProfileUpdating ? "Saving details..." : "Processing..."}
-                          </span>
-                        ) : bookingStatus === "success" ? (
-                          <span className="flex items-center gap-2">
-                            <CheckCircle2 className="w-5 h-5 text-green-400" />
-                            Success!
-                          </span>
-                        ) : (
-                          siteConfig.taxonomy.actionLabel
-                        )}
-                      </Button>
+                        <Heart
+                          className={`w-5 h-5 ${isFavorite ? "fill-red-500 text-red-500" : "text-muted-foreground"}`}
+                        />
+                      </button>
+                    </div>
 
-                      {bookingStatus !== "idle" &&
-                        bookingStatus !== "success" && (
-                          <p className="text-xs text-red-500 text-center bg-red-500/10 p-2 rounded border border-red-500/20">
-                            {bookingStatus === "error"
-                              ? "Booking failed. Please try again."
-                              : bookingStatus}
+                    {/* Price */}
+                    <div className="space-y-1">
+                      <p className="text-sm text-muted-foreground">Unit Price</p>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-4xl font-bold text-primary">
+                          {formatPrice(car.price)}
+                        </span>
+                        <span className="text-sm text-muted-foreground">{siteConfig.taxonomy.priceSuffix}</span>
+                      </div>
+                    </div>
+
+                    {/* Quantity Picker */}
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-foreground block">
+                        Quantity
+                      </label>
+                      {isInCart(id) ? (
+                        // When already in cart, show a stepper to update quantity directly
+                        <div className="flex items-center gap-3">
+                          <button
+                            onClick={() => {
+                              const newQty = getQuantity(id) - 1;
+                              if (newQty < 1) return;
+                              updateQuantity(id, newQty);
+                            }}
+                            disabled={getQuantity(id) <= quantityCfg.min}
+                            className="w-10 h-10 rounded-lg border border-border bg-secondary hover:bg-muted flex items-center justify-center text-lg font-bold disabled:opacity-40 transition-colors"
+                          >
+                            −
+                          </button>
+                          <span className="text-xl font-bold text-foreground w-8 text-center">
+                            {getQuantity(id)}
+                          </span>
+                          <button
+                            onClick={() => {
+                              const newQty = getQuantity(id) + 1;
+                              if (newQty > quantityCfg.max) return;
+                              updateQuantity(id, newQty);
+                            }}
+                            disabled={getQuantity(id) >= quantityCfg.max}
+                            className="w-10 h-10 rounded-lg border border-border bg-secondary hover:bg-muted flex items-center justify-center text-lg font-bold disabled:opacity-40 transition-colors"
+                          >
+                            +
+                          </button>
+                        </div>
+                      ) : (
+                        // When not yet in cart, show a dropdown
+                        <select
+                          value={selectedQty}
+                          onChange={(e) => setSelectedQty(Number(e.target.value))}
+                          className="w-full px-3 py-2.5 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm font-medium"
+                        >
+                          {Array.from(
+                            { length: quantityCfg.max - quantityCfg.min + 1 },
+                            (_, i) => quantityCfg.min + i
+                          ).map((qty) => (
+                            <option key={qty} value={qty}>{qty}</option>
+                          ))}
+                        </select>
+                      )}
+                    </div>
+
+                    {/* Subtotal */}
+                    <div className="pt-4 border-t border-border space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">
+                          {isInCart(id) ? getQuantity(id) : selectedQty} × {formatPrice(car.price)}
+                        </span>
+                        <span className="font-semibold text-foreground">
+                          {formatPrice(car.price * (isInCart(id) ? getQuantity(id) : selectedQty))}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Add to Cart / Go to Cart CTA */}
+                    <div className="space-y-3">
+                      {isInCart(id) ? (
+                        <>
+                          <Button
+                            onClick={() => router.push("/cart")}
+                            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6 font-semibold text-lg flex items-center gap-2"
+                          >
+                            <ShoppingCart className="w-5 h-5" />
+                            View Cart
+                          </Button>
+                          <p className="text-xs text-green-500 text-center bg-green-500/10 p-2 rounded border border-green-500/20 flex items-center justify-center gap-1">
+                            <CheckCircle className="w-3.5 h-3.5" />
+                            Item is in your cart
                           </p>
-                        )}
+                        </>
+                      ) : (
+                        <Button
+                          onClick={() => {
+                            addItem({
+                              id: String(car.id),
+                              name: car.name,
+                              image: car.image,
+                              price: car.price,
+                              priceDisplay: formatPrice(car.price),
+                              priceSuffix: siteConfig.taxonomy.priceSuffix,
+                              category: car.category,
+                            }, selectedQty);
+                            setCartAdded(true);
+                            toast({
+                              title: "Added to cart!",
+                              description: `${selectedQty}× ${car.name} added to your ${siteConfig.taxonomy.cartLabel}.`,
+                            });
+                          }}
+                          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6 font-semibold text-lg flex items-center gap-2"
+                        >
+                          <ShoppingCart className="w-5 h-5" />
+                          {siteConfig.taxonomy.addToCartLabel}
+                        </Button>
+                      )}
                     </div>
-                  </div>
 
-                  {/* Info */}
-                  <div className="text-xs text-muted-foreground text-center">
-                    <p>✓ Free Cancellation up to 24 hours</p>
-                    <p>✓ 24/7 Customer Support</p>
-                    <p>✓ Comprehensive Insurance</p>
-                  </div>
-                </Card>
-
-                {isAuthenticated && (!user.phone || !user.licenseNumber || !user.address || !user.city) && (
-                  <Card className="p-6 bg-primary/10 border border-primary/20 space-y-4 rounded-xl shadow-lg relative overflow-hidden">
-                    <div className="absolute top-0 left-0 w-1 h-full bg-primary" />
-                    <div className="flex items-center gap-2 text-primary font-bold">
-                      <Shield className="w-5 h-5 flex-shrink-0" />
-                      <h3 className="text-lg">Required Details</h3>
-                    </div>
-                    <p className="text-sm text-foreground font-medium">
-                      For your safety and a seamless booking process, please complete your profile details below.
-                    </p>
-                    
-                    {profileUpdateError && (
-                      <p className="text-xs text-destructive bg-destructive/10 p-2 rounded border border-destructive/20">{profileUpdateError}</p>
-                    )}
-
-                    <div className="space-y-3 pt-2">
-                      <div>
-                        <input 
-                          type="text" 
-                          placeholder="Phone Number (+91...)"
-                          value={phone}
-                          onChange={(e) => setPhone(e.target.value)}
-                          className="w-full px-3 py-2 bg-background border border-border rounded-lg focus:ring-2 focus:ring-primary/50 text-sm"
-                        />
-                      </div>
-                      <div>
-                        <input 
-                          type="text" 
-                          placeholder="Driver's License Number"
-                          value={licenseNumber}
-                          onChange={(e) => setLicenseNumber(e.target.value)}
-                          className="w-full px-3 py-2 bg-background border border-border rounded-lg focus:ring-2 focus:ring-primary/50 text-sm"
-                        />
-                      </div>
-                      <p className="text-xs text-muted-foreground italic">City and Address from the summary below will also be saved.</p>
+                    {/* Info */}
+                    <div className="text-xs text-muted-foreground text-center space-y-1">
+                      <p>✓ {siteConfig.booking.freeCancellation}</p>
+                      <p>✓ {siteConfig.booking.support}</p>
                     </div>
                   </Card>
-                )}
+
+                ) : (
+                  <>
+                    <Card className="p-6 bg-gradient-to-b from-card to-card border-border space-y-6">
+                    <div className="flex justify-between items-center bg-card">
+                      <h3 className="text-xl font-bold">Booking Summary</h3>
+                      <button
+                        onClick={() => setIsFavorite(!isFavorite)}
+                        className="p-2 bg-background/50 rounded-full hover:bg-secondary transition-colors"
+                      >
+                        <Heart
+                          className={`w-5 h-5 ${isFavorite ? "fill-red-500 text-red-500" : "text-muted-foreground"}`}
+                        />
+                      </button>
+                    </div>
+                    {/* User Context */}
+                    {user && (
+                      <div className="p-3 bg-primary/5 rounded-lg border border-primary/20 space-y-1">
+                        <p className="text-xs text-muted-foreground font-semibold uppercase">
+                          Booking as
+                        </p>
+                        <p className="text-sm font-bold text-foreground">
+                          {user.fullName}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {user.email}
+                        </p>
+                      </div>
+                    )}
+
+                    <div className="space-y-2">
+                      <p className="text-sm text-muted-foreground">Price</p>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-4xl font-bold text-primary">
+                          {formatPrice(car.price)}
+                        </span>
+                        <span className="text-sm text-muted-foreground">{siteConfig.taxonomy.priceSuffix}</span>
+                      </div>
+                    </div>
+
+                    {/* Booking/Purchase Logic */}
+                    {siteConfig.template.mode === "service" ? (
+                      <>
+                        {/* Booking Type */}
+                        <div className="flex bg-secondary rounded-lg p-1">
+                          <button
+                            onClick={() => setBookingType("hourly")}
+                            className={`flex-1 py-2 text-sm font-semibold rounded-md transition-all ${bookingType === "hourly" ? "bg-background text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+                          >
+                            Short Term
+                          </button>
+                          <button
+                            onClick={() => setBookingType("subscription")}
+                            className={`flex-1 py-2 text-sm font-semibold rounded-md transition-all ${bookingType === "subscription" ? "bg-background text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+                          >
+                            Long Term
+                          </button>
+                        </div>
+
+                        {/* Selection */}
+                        <div className="space-y-4">
+                          {bookingType === "hourly" ? (
+                            <div>
+                              <label className="text-sm font-semibold text-foreground mb-2 block">
+                                Hours
+                              </label>
+                              <input
+                                type="number"
+                                min="1"
+                                value={hours}
+                                onChange={(e) => setHours(Number(e.target.value))}
+                                className="w-full px-3 py-2 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                              />
+                            </div>
+                          ) : (
+                            <div>
+                              <label className="text-sm font-semibold text-foreground mb-2 block">
+                                Duration (Days)
+                              </label>
+                              <input
+                                type="number"
+                                min="7"
+                                value={subscriptionDays}
+                                onChange={(e) =>
+                                  setSubscriptionDays(
+                                    Math.max(7, Number(e.target.value)),
+                                  )
+                                }
+                                className="w-full px-3 py-2 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                              />
+                            </div>
+                          )}
+                        </div>
+                      </>
+                    ) : (
+                      <div className="space-y-4">
+                        <p className="text-sm text-muted-foreground">
+                          Ready to purchase? Click below to proceed to checkout.
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Shared Details: City & Address */}
+                    <div className="space-y-4 pt-4 border-t border-border">
+                      <div>
+                        <label className="text-sm font-semibold text-foreground mb-2 block flex items-center gap-1">
+                          <MapPin className="w-3 h-3 text-primary" /> Delivery City
+                        </label>
+                        <select
+                          value={selectedCity}
+                          onChange={(e) => setSelectedCity(e.target.value)}
+                          className="w-full px-3 py-2 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                        >
+                          {INDIAN_CITIES.map(city => (
+                            <option key={city} value={city}>{city}</option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="text-sm font-semibold text-foreground mb-2 block">
+                          Delivery Address
+                        </label>
+                        <textarea
+                          placeholder="Street name, landmark, etc."
+                          value={address}
+                          onChange={(e) => setAddress(e.target.value)}
+                          rows={2}
+                          className="w-full px-3 py-2 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Pricing Summary */}
+                    <div className="space-y-2 pt-4 border-t border-border">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">
+                          {bookingType === "hourly"
+                            ? `${hours} hours`
+                            : `${subscriptionDays} days`}
+                        </span>
+                        <span className="font-semibold text-foreground">
+                          {formatPrice(defaultCost)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">
+                          Taxes & Fees (18%)
+                        </span>
+                        <span className="font-semibold text-foreground">
+                          {formatPrice(tax)}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Total */}
+                    <div className="pt-4 border-t border-border space-y-4">
+                      <div className="flex justify-between items-center">
+                        <span className="font-bold text-foreground">Total</span>
+                        <span className="text-2xl font-bold text-primary">
+                          {formatPrice(totalCost)}
+                        </span>
+                      </div>
+
+                      {/* CTA */}
+                      <div className="space-y-3">
+                        <Button
+                          onClick={handleBookNow}
+                          disabled={isBooking || bookingStatus === "success"}
+                          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6 font-semibold text-lg transition-all active:scale-[0.98] relative overflow-hidden"
+                        >
+                          {isVerifying ? (
+                            <span className="flex items-center gap-2">
+                              <Loader2 className="w-5 h-5 animate-spin" />
+                              Verifying...
+                            </span>
+                          ) : isBooking ? (
+                            <span className="flex items-center gap-2">
+                              <Loader2 className="w-5 h-5 animate-spin" />
+                              {isProfileUpdating ? "Saving details..." : "Processing..."}
+                            </span>
+                          ) : bookingStatus === "success" ? (
+                            <span className="flex items-center gap-2">
+                              <CheckCircle2 className="w-5 h-5 text-green-400" />
+                              Success!
+                            </span>
+                          ) : (
+                            siteConfig.taxonomy.actionLabel
+                          )}
+                        </Button>
+
+                        {bookingStatus !== "idle" &&
+                          bookingStatus !== "success" && (
+                            <p className="text-xs text-red-500 text-center bg-red-500/10 p-2 rounded border border-red-500/20">
+                              {bookingStatus === "error"
+                                ? "Booking failed. Please try again."
+                                : bookingStatus}
+                            </p>
+                          )}
+                      </div>
+                    </div>
+
+                    {/* Info */}
+                    <div className="text-xs text-muted-foreground text-center">
+                      <p>✓ Free Cancellation up to 24 hours</p>
+                      <p>✓ 24/7 Customer Support</p>
+                      <p>✓ Comprehensive Insurance</p>
+                    </div>
+                  </Card>
+
+                  {isAuthenticated && (!user.phone || !user.licenseNumber || !user.address || !user.city) && (
+                    <Card className="p-6 bg-primary/10 border border-primary/20 space-y-4 rounded-xl shadow-lg relative overflow-hidden">
+                      <div className="absolute top-0 left-0 w-1 h-full bg-primary" />
+                      <div className="flex items-center gap-2 text-primary font-bold">
+                        <Shield className="w-5 h-5 flex-shrink-0" />
+                        <h3 className="text-lg">Required Details</h3>
+                      </div>
+                      <p className="text-sm text-foreground font-medium">
+                        For your safety and a seamless booking process, please complete your profile details below.
+                      </p>
+
+                      {profileUpdateError && (
+                        <p className="text-xs text-destructive bg-destructive/10 p-2 rounded border border-destructive/20">{profileUpdateError}</p>
+                      )}
+
+                      <div className="space-y-3 pt-2">
+                        <div>
+                          <input
+                            type="text"
+                            placeholder="Phone Number (+91...)"
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value)}
+                            className="w-full px-3 py-2 bg-background border border-border rounded-lg focus:ring-2 focus:ring-primary/50 text-sm"
+                          />
+                        </div>
+                        <div>
+                          <input
+                            type="text"
+                            placeholder="Driver's License Number"
+                            value={licenseNumber}
+                            onChange={(e) => setLicenseNumber(e.target.value)}
+                            className="w-full px-3 py-2 bg-background border border-border rounded-lg focus:ring-2 focus:ring-primary/50 text-sm"
+                          />
+                        </div>
+                        <p className="text-xs text-muted-foreground italic">City and Address from the summary below will also be saved.</p>
+                      </div>
+                    </Card>
+                  )}
+                </>
+              )} {/* end isShoppingMode ternary */}
               </div>
             </div>
           </div>

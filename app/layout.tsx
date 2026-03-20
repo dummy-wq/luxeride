@@ -52,6 +52,7 @@ export const metadata: Metadata = {
 };
 
 import { AuthProvider } from "@/lib/context/auth-context";
+import { CartProvider } from "@/lib/context/cart-context";
 
 export default function RootLayout({
   children,
@@ -64,10 +65,12 @@ export default function RootLayout({
         className={`${montserrat.variable} ${inter.variable} font-sans antialiased`}
       >
         <AuthProvider>
-          <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-            <PageTransition>{children}</PageTransition>
-            <Toaster />
-          </ThemeProvider>
+          <CartProvider>
+            <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+              <PageTransition>{children}</PageTransition>
+              <Toaster />
+            </ThemeProvider>
+          </CartProvider>
         </AuthProvider>
         <Analytics />
         <SpeedInsights />
