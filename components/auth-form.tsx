@@ -20,7 +20,11 @@ export function AuthForm({ type, onSubmit }: AuthFormProps) {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    setRedirectPath(params.get("redirect"));
+    const redirect = params.get("redirect");
+    // Only allow relative paths to prevent open redirect vulnerabilities
+    if (redirect && redirect.startsWith("/") && !redirect.startsWith("//")) {
+      setRedirectPath(redirect);
+    }
   }, []);
   const { login: authLogin } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
