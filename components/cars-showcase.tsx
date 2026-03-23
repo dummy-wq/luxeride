@@ -668,7 +668,7 @@ export function CarsShowcase() {
                           }}
                         >
                           <Card
-                            className={`group overflow-hidden hover:shadow-lg transition-all duration-150 hover:-translate-y-1 bg-card border-border relative h-full ${shaded ? "grayscale opacity-60" : ""}`}
+                            className={`group overflow-hidden hover:shadow-lg transition-all duration-100 ease-out hover:-translate-y-1 bg-card border-border relative h-full ${shaded ? "grayscale opacity-60" : ""}`}
                           >
                             {/* Availability Badge */}
                             <div
@@ -704,7 +704,7 @@ export function CarsShowcase() {
                               )}
                               <button
                                 onClick={(e) => toggleFavorite(e, car.id)}
-                                className="absolute top-4 right-4 p-2.5 bg-background/80 backdrop-blur-md rounded-full text-muted-foreground hover:text-red-500 hover:bg-background transition-all hover:scale-110 z-10"
+                                className="absolute top-4 right-4 p-2.5 bg-background/80 backdrop-blur-md rounded-full text-muted-foreground hover:text-red-500 hover:bg-background transition-all duration-100 ease-out hover:scale-110 z-10"
                               >
                                 <Heart
                                   className={`w-5 h-5 transition-colors ${favorites.includes(car.id) ? "fill-red-500 text-red-500" : ""}`}
@@ -755,7 +755,7 @@ export function CarsShowcase() {
                                     {isInCart(carId) ? (
                                       <Button
                                         onClick={() => router.push("/cart")}
-                                        className="w-full bg-secondary border border-primary/20 text-primary hover:bg-secondary/80 transition-all font-bold flex items-center justify-center gap-2"
+                                        className="w-full bg-secondary border border-primary/20 text-primary hover:bg-secondary/80 transition-all duration-100 ease-out font-bold flex items-center justify-center gap-2"
                                       >
                                         <ShoppingCart className="w-4 h-4" />
                                         In {siteConfig.taxonomy.cartLabel}
@@ -774,7 +774,7 @@ export function CarsShowcase() {
                                             category: car.category,
                                           }, quantityCfg.default);
                                         }}
-                                        className="w-full bg-primary hover:bg-primary/90 text-primary-foreground transition-all font-bold flex items-center justify-center gap-2"
+                                        className="w-full bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-100 ease-out font-bold flex items-center justify-center gap-2"
                                       >
                                         <ShoppingCart className="w-4 h-4" />
                                         {siteConfig.taxonomy.addToCartLabel}
@@ -791,14 +791,14 @@ export function CarsShowcase() {
                                 ) : hasDetail && !shaded ? (
                                   <Button
                                     onClick={() => openCarDetail(carId)}
-                                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground transition-all"
+                                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-100 ease-out"
                                   >
                                     {siteConfig.taxonomy.actionLabel}
                                   </Button>
                                 ) : (
                                   <Button
                                     disabled={shaded || !hasDetail}
-                                    className={`w-full transition-all ${
+                                    className={`w-full transition-all duration-100 ease-out ${
                                       shaded || !hasDetail
                                         ? "bg-muted text-muted-foreground cursor-not-allowed"
                                         : "bg-primary hover:bg-primary/90 text-primary-foreground"

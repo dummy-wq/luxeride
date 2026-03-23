@@ -55,14 +55,60 @@ async function main() {
 
   console.log('\\n🚀 Updating globals.css...');
   let content = fs.readFileSync(globalsPath, 'utf8');
+  
+  // Update primary variables
   content = updateVar(content, ':root',        '--primary',      lightPrimary);
   content = updateVar(content, ':root',        '--background',   lightBg);
   content = updateVar(content, ':root',        '--ring',         lightPrimary);
   content = updateVar(content, '.dark',        '--primary',      darkPrimary);
   content = updateVar(content, '.dark',        '--background',   darkBg);
   content = updateVar(content, '.dark',        '--ring',         darkPrimary);
+
+  // Update dynamic foregrounds (using a simplified version of the API contrast check)
+  const getContrast = (hex) => {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    const yiq = (r * 299 + g * 587 + b * 114) / 1000;
+    return yiq >= 128 ? "#141311" : "#fbf1c7";
+  };
+
+  content = updateVar(content, ':root', '--foreground', getContrast(lightBg));
+  content = updateVar(content, '.dark', '--foreground', getContrast(darkBg));
+
+  // Derive structural colors for consistency
+  const lightMix = 'color-mix(in srgb, var(--foreground) 15%, var(--background))';
+  const lightMuted = 'color-mix(in srgb, var(--foreground) 65%, var(--background))';
+  
+  content = updateVar(content, ':root', '--muted', lightMix);
+  content = updateVar(content, ':root', '--muted-foreground', lightMuted);
+  content = updateVar(content, ':root', '--border', lightMix);
+  content = updateVar(content, ':root', '--input', lightMix);
+  content = updateVar(content, ':root', '--secondary', 'color-mix(in srgb, var(--foreground) 4%, var(--background))');
+  content = updateVar(content, ':root', '--secondary-foreground', 'var(--foreground)');
+  content = updateVar(content, ':root', '--card', 'color-mix(in srgb, var(--foreground) 2%, var(--background))');
+  content = updateVar(content, ':root', '--card-foreground', 'var(--foreground)');
+  content = updateVar(content, ':root', '--popover', 'var(--background)');
+  content = updateVar(content, ':root', '--popover-foreground', 'var(--foreground)');
+
+  const darkMix = 'color-mix(in srgb, var(--foreground) 15%, var(--background))';
+  const darkMuted = 'color-mix(in srgb, var(--foreground) 65%, var(--background))';
+
+  content = updateVar(content, '.dark', '--muted', darkMix);
+  content = updateVar(content, '.dark', '--muted-foreground', darkMuted);
+  content = updateVar(content, '.dark', '--border', darkMix);
+  content = updateVar(content, '.dark', '--input', darkMix);
+  content = updateVar(content, '.dark', '--secondary', 'color-mix(in srgb, var(--foreground) 10%, var(--background))');
+  content = updateVar(content, '.dark', '--secondary-foreground', 'var(--foreground)');
+  content = updateVar(content, '.dark', '--card', 'color-mix(in srgb, var(--foreground) 3%, var(--background))');
+  content = updateVar(content, '.dark', '--card-foreground', 'var(--foreground)');
+  content = updateVar(content, '.dark', '--popover', 'var(--background)');
+  content = updateVar(content, '.dark', '--popover-foreground', 'var(--foreground)');
+
+  // Update fonts
   content = updateVar(content, '@theme inline','--font-heading', headingFont);
   content = updateVar(content, '@theme inline','--font-sans',    bodyFont);
+  
   fs.writeFileSync(globalsPath, content);
   console.log('\\n✨ Done! Run npm run dev to see your changes.\\n');
   rl.close();

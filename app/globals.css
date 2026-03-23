@@ -84,7 +84,7 @@
   }
 
   .transition-smooth {
-    @apply transition-all duration-150 ease-out;
+    @apply transition-all duration-100 ease-out;
   }
 
   .animate-fade-in {
